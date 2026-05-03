@@ -1,0 +1,23 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: cd apps/web && bun install && bun run build
+      - run: aws s3 sync apps/landing/ s3://borjaxai-landing --delete
+      - run: aws s3 sync apps/docs/ s3://borjaxai-docs --delete
+      - run: aws s3 sync apps/web/dist/ s3://borjaxai-app --delete
+      - run: |
+          aws cloudfront create-invalidation --distribution-id E3V2QABUN2DR4J --paths "/*"
+          aws cloudfront create-invalidation --distribution-id E2BBJE8PDFZNPH --paths "/*"
+          aws cloudfront create-invalidation --distribution-id EAQ6QZADKYLD9 --paths "/*"
