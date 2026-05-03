@@ -9,6 +9,8 @@ import { initSettings } from './pages/settings.js';
 import { initAuthPage } from './pages/auth.js';
 import { updateUsageDisplay } from './utils/tokens.js';
 import { showSignUpModal } from './components/modals.js';
+import { initNotifications } from './components/notifications.js';
+import { initShortcuts } from './utils/shortcuts.js';
 
 const PAGES = {
   chat:       { init: initChat,       title: 'Chat' },
@@ -89,4 +91,8 @@ document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
   sidebar.classList.toggle('open');
 });
 window.addEventListener('hashchange', route);
-window.addEventListener('DOMContentLoaded', route);
+window.addEventListener('DOMContentLoaded', () => {
+  initNotifications();
+  initShortcuts();
+  route();
+});

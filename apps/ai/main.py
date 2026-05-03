@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db.database import init_db
-from routers import auth, chat, tasks, agents
+from routers import auth, chat, tasks, agents, billing
 from routers.internal import internal_router
 
 
@@ -39,6 +39,7 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
 app.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
 app.include_router(agents.router, prefix="/agents", tags=["agents"])
+app.include_router(billing.router, prefix="/billing", tags=["billing"])
 app.include_router(internal_router, prefix="/internal", tags=["internal"])
 
 
