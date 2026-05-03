@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BorjaxAI Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#13141f; --bg-alt:#1a1b2e; --bg-card:#1e2035; --border:#2a2c42;
+      --blue:#7aa2f7; --purple:#bb9af7; --cyan:#7dcfff; --green:#9ece6a;
+      --orange:#ff9e64; --red:#f7768e; --yellow:#e0af68;
+      --fg:#c0caf5; --fg-dim:#787c99; --fg-muted:#414868;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--fg); display:flex; min-height:100vh; }
+
+    /* TOP BAR */
+    .topbar {
+      position:fixed; top:0; left:0; right:0; height:56px; z-index:200;
+      background:rgba(19,20,31,.9); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; padding:0 1.5rem; gap:1.5rem;
+    }
+    .topbar-logo { display:flex; align-items:center; gap:.5rem; font-weight:800; font-size:1rem; text-decoration:none; }
+    .topbar-logo-icon { width:28px; height:28px; background:linear-gradient(135deg,#7aa2f7,#bb9af7,#7dcfff); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.8rem; }
+    .topbar-logo span { background:linear-gradient(135deg,#7aa2f7,#bb9af7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .topbar-sep { color:var(--fg-muted); }
+    .topbar-title { color:var(--fg-dim); font-size:.9rem; }
+    .topbar-right { margin-left:auto; display:flex; gap:.75rem; }
+    .topbar-right a { font-size:.85rem; color:var(--fg-dim); text-decoration:none; padding:.3rem .75rem; border-radius:6px; transition:all .2s; }
+    .topbar-right a:hover { color:var(--fg); background:var(--bg-card); }
+    .topbar-right a.cta { background:var(--blue); color:var(--bg); font-weight:600; }
+    .topbar-right a.cta:hover { background:#89b4f8; }
+
+    /* SIDEBAR */
+    .sidebar {
+      position:fixed; top:56px; left:0; bottom:0; width:260px;
+      background:var(--bg-alt); border-right:1px solid var(--border);
+      overflow-y:auto; padding:1.5rem 1rem;
+    }
+    .sidebar::-webkit-scrollbar { width:4px; }
+    .sidebar::-webkit-scrollbar-track { background:transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+    .sidebar-section { margin-bottom:1.75rem; }
+    .sidebar-heading { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--fg-muted); padding:.25rem .5rem; margin-bottom:.5rem; }
+
+    .sidebar-link {
+      display:block; padding:.4rem .75rem; border-radius:6px;
+      font-size:.85rem; color:var(--fg-dim); text-decoration:none;
+      transition:all .2s; margin-bottom:2px;
+    }
+    .sidebar-link:hover { color:var(--fg); background:rgba(122,162,247,.08); }
+    .sidebar-link.active { color:var(--blue); background:rgba(122,162,247,.12); font-weight:500; }
+
+    /* CONTENT */
+    .content {
+      margin-left:260px; margin-top:56px;
+      flex:1; max-width:800px;
+      padding:3rem 3rem 6rem;
+    }
+
+    /* TYPOGRAPHY */
+    h1 { font-size:2.25rem; font-weight:800; letter-spacing:-.02em; margin-bottom:1rem; }
+    h2 { font-size:1.6rem; font-weight:700; letter-spacing:-.02em; margin:3rem 0 1rem; padding-top:1rem; border-top:1px solid var(--border); }
+    h2:first-of-type { border-top:none; margin-top:0; }
+    h3 { font-size:1.1rem; font-weight:700; margin:2rem 0 .75rem; color:var(--blue); }
+    p { color:var(--fg-dim); line-height:1.75; margin-bottom:1rem; }
+    a { color:var(--blue); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    ul,ol { padding-left:1.5rem; color:var(--fg-dim); line-height:1.75; margin-bottom:1rem; }
+    li { margin-bottom:.25rem; }
+    strong { color:var(--fg); font-weight:600; }
+
+    /* CODE */
+    code {
+      font-family:'JetBrains Mono',monospace; font-size:.85em;
+      background:var(--bg-card); border:1px solid var(--border);
+      padding:.15em .4em; border-radius:4px; color:var(--cyan);
+    }
+    pre {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:10px; padding:1.25rem 1.5rem; overflow-x:auto;
+      margin:1.25rem 0;
+    }
+    pre code { background:none; border:none; padding:0; font-size:.875rem; line-height:1.7; }
+
+    /* NOTE / WARNING */
+    .note, .warning, .tip {
+      border-radius:10px; padding:1rem 1.25rem; margin:1.5rem 0;
+      border-left:3px solid;
+    }
+    .note { background:rgba(122,162,247,.08); border-color:var(--blue); }
+    .warning { background:rgba(247,118,142,.08); border-color:var(--red); }
+    .tip { background:rgba(158,206,106,.08); border-color:var(--green); }
+    .note p, .warning p, .tip p { margin:0; }
+    .note strong { color:var(--blue); }
+    .warning strong { color:var(--red); }
+    .tip strong { color:var(--green); }
+
+    /* TABLE */
+    table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:.875rem; }
+    th { text-align:left; padding:.6rem 1rem; background:var(--bg-card); border-bottom:2px solid var(--border); font-weight:600; color:var(--fg); }
+    td { padding:.6rem 1rem; border-bottom:1px solid var(--border); color:var(--fg-dim); }
+    tr:last-child td { border-bottom:none; }
+
+    /* BADGE */
+    .badge { display:inline-block; padding:.2rem .6rem; border-radius:999px; font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+    .badge-blue { background:rgba(122,162,247,.15); color:var(--blue); }
+    .badge-green { background:rgba(158,206,106,.15); color:var(--green); }
+    .badge-purple { background:rgba(187,154,247,.15); color:var(--purple); }
+    .badge-orange { background:rgba(255,158,100,.15); color:var(--orange); }
+
+    /* PAGE SECTIONS */
+    .docs-section { display:none; }
+    .docs-section.active { display:block; }
+
+    /* ENDPOINT */
+    .endpoint {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+      margin:1.5rem 0; overflow:hidden;
+    }
+    .endpoint-header {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.75rem 1.25rem; border-bottom:1px solid var(--border);
+      background:var(--bg-alt);
+    }
+    .method { padding:.2rem .5rem; border-radius:5px; font-size:.75rem; font-weight:800; font-family:'JetBrains Mono',monospace; }
+    .method-post { background:rgba(158,206,106,.15); color:var(--green); }
+    .method-get  { background:rgba(122,162,247,.15); color:var(--blue); }
+    .method-put  { background:rgba(255,158,100,.15); color:var(--orange); }
+    .method-delete { background:rgba(247,118,142,.15); color:var(--red); }
+    .endpoint-path { font-family:'JetBrains Mono',monospace; font-size:.875rem; color:var(--fg); }
+    .endpoint-body { padding:1.25rem; }
+
+    @media(max-width:768px){
+      .sidebar{display:none}
+      .content{margin-left:0; padding:2rem 1.25rem 4rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="topbar-logo">
+    <div class="topbar-logo-icon">⚡</div>
+    <span>BorjaxAI</span>
+  </a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">Documentation</span>
+  <div class="topbar-right">
+    <a href="/">Home</a>
+    <a href="/app/" class="cta">Open App →</a>
+  </div>
+</div>
+
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Getting Started</div>
+    <a class="sidebar-link active" href="#" onclick="show('intro')">Introduction</a>
+    <a class="sidebar-link" href="#" onclick="show('quickstart')">Quick Start</a>
+    <a class="sidebar-link" href="#" onclick="show('pricing')">Pricing & Limits</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Features</div>
+    <a class="sidebar-link" href="#" onclick="show('chat')">AI Chat</a>
+    <a class="sidebar-link" href="#" onclick="show('tasks')">Background Tasks</a>
+    <a class="sidebar-link" href="#" onclick="show('agents')">Agent Builder</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">API Reference</div>
+    <a class="sidebar-link" href="#" onclick="show('api-auth')">Authentication</a>
+    <a class="sidebar-link" href="#" onclick="show('api-chat')">Chat</a>
+    <a class="sidebar-link" href="#" onclick="show('api-tasks')">Tasks</a>
+    <a class="sidebar-link" href="#" onclick="show('api-agents')">Agents</a>
+  </div>
+</nav>
+
+<main class="content">
+
+  <!-- ── INTRODUCTION ── -->
+  <div id="intro" class="docs-section active">
+    <h1>BorjaxAI Documentation</h1>
+    <p>Welcome to the BorjaxAI platform documentation. BorjaxAI gives you a full AI team — chat, background tasks, and custom agents — all powered by Claude 3.5 Sonnet on AWS Bedrock.</p>
+
+    <div class="note"><p><strong>Note:</strong> BorjaxAI is currently in public beta. APIs are stable but may evolve. Follow our changelog for updates.</p></div>
+
+    <h2>What is BorjaxAI?</h2>
+    <p>BorjaxAI is a SaaS platform that provides three core capabilities:</p>
+    <ul>
+      <li><strong>AI Chat</strong> — Real-time streaming chat with Claude 3.5 Sonnet with full conversation history</li>
+      <li><strong>Background Tasks</strong> — Submit long-running AI tasks to a Celery queue and poll for results</li>
+      <li><strong>Agent Builder</strong> — Design custom AI agents with roles and tools, combine into CrewAI crews</li>
+    </ul>
+
+    <h2>Architecture Overview</h2>
+    <p>The platform consists of several components working together:</p>
+    <table>
+      <tr><th>Component</th><th>Tech</th><th>Purpose</th></tr>
+      <tr><td>API Gateway</td><td>Hono (TypeScript)</td><td>Auth, routing, Stripe billing</td></tr>
+      <tr><td>AI Backend</td><td>FastAPI (Python)</td><td>LLM calls, agent execution, DB</td></tr>
+      <tr><td>Task Queue</td><td>Celery + Redis</td><td>Async background task processing</td></tr>
+      <tr><td>Database</td><td>PostgreSQL + pgvector</td><td>Users, conversations, agents</td></tr>
+      <tr><td>LLM</td><td>AWS Bedrock (Claude)</td><td>Language model inference</td></tr>
+    </table>
+
+    <h2>Base URL</h2>
+    <p>All API requests go through the gateway:</p>
+    <pre><code>https://api.borjax.ai/v1</code></pre>
+  </div>
+
+  <!-- ── QUICK START ── -->
+  <div id="quickstart" class="docs-section">
+    <h1>Quick Start</h1>
+    <p>Get up and running with BorjaxAI in under 5 minutes.</p>
+
+    <h2>1. Create an Account</h2>
+    <p>Register via the API or the web dashboard:</p>
+    <pre><code>curl -X POST https://api.borjax.ai/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "you@example.com",
+    "password": "your_password",
+    "full_name": "Your Name"
+  }'</code></pre>
+    <p>Response:</p>
+    <pre><code>{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "user": {
+    "id": "uuid",
+    "email": "you@example.com",
+    "plan": "free",
+    "tokens_used": 0,
+    "tokens_limit": 10000
+  }
+}</code></pre>
+
+    <h2>2. Send Your First Chat Message</h2>
+    <p>Chat with Claude via streaming SSE:</p>
+    <pre><code>curl -X POST https://api.borjax.ai/v1/chat/send \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: text/event-stream" \
+  -d '{
+    "message": "Hello! What can you help me with?",
+    "conversation_id": null
+  }'</code></pre>
+
+    <h2>3. Submit a Background Task</h2>
+    <pre><code>curl -X POST https://api.borjax.ai/v1/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "research",
+    "prompt": "Research the top AI trends for 2025",
+    "agent_id": null
+  }'</code></pre>
+
+    <h2>4. Poll for Task Results</h2>
+    <pre><code>curl https://api.borjax.ai/v1/tasks/{task_id} \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+
+    <div class="tip"><p><strong>Tip:</strong> Use the web dashboard at <a href="/app/">/app/</a> for a visual interface to all these features without writing any code.</p></div>
+  </div>
+
+  <!-- ── PRICING ── -->
+  <div id="pricing" class="docs-section">
+    <h1>Pricing &amp; Token Limits</h1>
+    <p>BorjaxAI uses a token-based pricing model. Tokens are consumed by all AI operations: chat messages, background tasks, and agent runs.</p>
+
+    <h2>Plans</h2>
+    <table>
+      <tr><th>Plan</th><th>Price</th><th>Tokens/Month</th><th>Tasks</th><th>Agents</th></tr>
+      <tr><td><span class="badge badge-blue">Free</span></td><td>$0</td><td>10,000</td><td>5</td><td>1</td></tr>
+      <tr><td><span class="badge badge-green">Starter</span></td><td>$9/mo</td><td>100,000</td><td>Unlimited</td><td>10</td></tr>
+      <tr><td><span class="badge badge-purple">Pro</span></td><td>$29/mo</td><td>500,000</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td><span class="badge badge-orange">Agency</span></td><td>$99/mo</td><td>2,000,000</td><td>Unlimited</td><td>Unlimited + Teams</td></tr>
+    </table>
+
+    <h2>Token Counting</h2>
+    <p>Tokens are counted as follows:</p>
+    <ul>
+      <li><strong>Chat</strong>: Input tokens + output tokens per message</li>
+      <li><strong>Tasks</strong>: All tokens consumed by the agent crew during execution</li>
+      <li><strong>Agents</strong>: Tokens consumed during agent run</li>
+    </ul>
+
+    <h2>What happens when I hit my limit?</h2>
+    <p>When you reach your monthly token limit, the API returns a <code>429 Too Many Requests</code> error. Upgrade your plan via the billing dashboard to continue.</p>
+  </div>
+
+  <!-- ── AI CHAT ── -->
+  <div id="chat" class="docs-section">
+    <h1>AI Chat</h1>
+    <p>Stream real-time conversations with Claude 3.5 Sonnet. Conversations maintain context across messages.</p>
+
+    <h2>How it Works</h2>
+    <p>Chat uses Server-Sent Events (SSE) to stream responses token-by-token. Each message is saved to the conversation history, and the full history is sent to Claude on each request for full context.</p>
+
+    <h2>Starting a Conversation</h2>
+    <p>Send <code>conversation_id: null</code> to start a new conversation. The response includes a <code>conversation_id</code> to use in subsequent messages:</p>
+    <pre><code>// SSE stream events:
+data: {"type":"token","content":"Hello"}
+data: {"type":"token","content":"! I"}
+data: {"type":"token","content":" can"}
+data: {"type":"done","conversation_id":"uuid","tokens_used":42}
+</code></pre>
+
+    <h2>Continuing a Conversation</h2>
+    <p>Pass the <code>conversation_id</code> from a previous response to continue the thread:</p>
+    <pre><code>POST /v1/chat/send
+{
+  "message": "What did you just say?",
+  "conversation_id": "existing-conversation-uuid"
+}
+</code></pre>
+
+    <h2>Listing Conversations</h2>
+    <pre><code>GET /v1/chat/conversations?page=1&limit=20</code></pre>
+  </div>
+
+  <!-- ── TASKS ── -->
+  <div id="tasks" class="docs-section">
+    <h1>Background Tasks</h1>
+    <p>Submit complex, long-running AI tasks to BorjaxAI's Celery-powered queue. Tasks run asynchronously so you don't have to wait.</p>
+
+    <h2>Task Types</h2>
+    <table>
+      <tr><th>Type</th><th>Description</th><th>Typical Duration</th></tr>
+      <tr><td><code>research</code></td><td>Research a topic using the Research CrewAI crew</td><td>30–120s</td></tr>
+      <tr><td><code>write</code></td><td>Write long-form content on a topic</td><td>20–90s</td></tr>
+      <tr><td><code>analyze</code></td><td>Analyze provided data or text</td><td>15–60s</td></tr>
+      <tr><td><code>custom</code></td><td>Run a custom agent (requires agent_id)</td><td>Varies</td></tr>
+    </table>
+
+    <h2>Task Lifecycle</h2>
+    <p>Tasks move through these states:</p>
+    <ul>
+      <li><strong>pending</strong> — In queue, waiting to be picked up by a worker</li>
+      <li><strong>running</strong> — Currently being executed by a Celery worker</li>
+      <li><strong>completed</strong> — Finished successfully, result available</li>
+      <li><strong>failed</strong> — Execution failed, error message available</li>
+    </ul>
+
+    <h2>Polling Pattern</h2>
+    <pre><code>// Submit task
+const { id } = await fetch('/v1/tasks', { method:'POST', ... })
+
+// Poll until done
+const poll = async () => {
+  const task = await fetch(`/v1/tasks/${id}`)
+  if (task.status === 'completed') return task.result
+  setTimeout(poll, 3000)
+}
+</code></pre>
+  </div>
+
+  <!-- ── AGENTS ── -->
+  <div id="agents" class="docs-section">
+    <h1>Agent Builder</h1>
+    <p>Design custom AI agents with specific roles, backstories, and capabilities. Combine them into automated CrewAI crews.</p>
+
+    <h2>Agent Schema</h2>
+    <pre><code>{
+  "name": "Marketing Copywriter",
+  "role": "Senior Marketing Copywriter",
+  "goal": "Write compelling, conversion-focused marketing copy",
+  "backstory": "You are a seasoned copywriter with 10+ years of experience...",
+  "tools": ["web_search", "text_analysis"],
+  "verbose": true
+}
+</code></pre>
+
+    <h2>Available Tools</h2>
+    <table>
+      <tr><th>Tool</th><th>Description</th></tr>
+      <tr><td><code>web_search</code></td><td>Search the web for current information</td></tr>
+      <tr><td><code>text_analysis</code></td><td>Analyze and summarize text content</td></tr>
+      <tr><td><code>code_execution</code></td><td>Execute Python code snippets</td></tr>
+      <tr><td><code>file_reader</code></td><td>Read and parse uploaded files</td></tr>
+    </table>
+
+    <h2>Built-in Crews</h2>
+    <p>BorjaxAI includes pre-built CrewAI crews for common workflows:</p>
+    <ul>
+      <li><strong>Research Crew</strong> — Researcher + Analyst agents for deep research</li>
+      <li><strong>Content Crew</strong> — Researcher + Writer + Editor agents</li>
+      <li><strong>Analysis Crew</strong> — Data analyst + Insights reporter</li>
+    </ul>
+  </div>
+
+  <!-- ── API AUTH ── -->
+  <div id="api-auth" class="docs-section">
+    <h1>API Reference: Authentication</h1>
+    <p>All API endpoints (except register and login) require a Bearer JWT token.</p>
+
+    <h2>Register</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/auth/register</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Create a new user account.</p>
+        <h3>Request Body</h3>
+        <pre><code>{ "email": "string", "password": "string", "full_name": "string" }</code></pre>
+        <h3>Response 201</h3>
+        <pre><code>{ "access_token": "string", "token_type": "bearer", "user": { ... } }</code></pre>
+      </div>
+    </div>
+
+    <h2>Login</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/auth/login</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Login with email and password.</p>
+        <pre><code>{ "email": "string", "password": "string" }</code></pre>
+      </div>
+    </div>
+
+    <h2>Get Current User</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/auth/me</span>
+        <span class="badge badge-blue">Auth Required</span>
+      </div>
+      <div class="endpoint-body">
+        <p>Returns the current authenticated user with token usage.</p>
+        <pre><code>{ "id": "uuid", "email": "string", "full_name": "string", "plan": "free|starter|pro|agency", "tokens_used": 0, "tokens_limit": 10000 }</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API CHAT ── -->
+  <div id="api-chat" class="docs-section">
+    <h1>API Reference: Chat</h1>
+
+    <h2>Send Message (SSE)</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/chat/send</span>
+        <span class="badge badge-blue">Auth</span>
+        <span class="badge badge-green">SSE</span>
+      </div>
+      <div class="endpoint-body">
+        <h3>Request</h3>
+        <pre><code>{ "message": "string", "conversation_id": "uuid|null" }</code></pre>
+        <h3>SSE Events</h3>
+        <pre><code>data: {"type":"token","content":"Hello"}
+data: {"type":"done","conversation_id":"uuid","tokens_used":42}
+data: {"type":"error","message":"..."}</code></pre>
+      </div>
+    </div>
+
+    <h2>List Conversations</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/chat/conversations</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>[{ "id":"uuid","title":"string","created_at":"iso8601","message_count":5 }]</code></pre>
+      </div>
+    </div>
+
+    <h2>Get Conversation</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/chat/conversations/{id}</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>{ "id":"uuid", "messages": [{ "role":"user|assistant", "content":"string", "created_at":"iso8601" }] }</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API TASKS ── -->
+  <div id="api-tasks" class="docs-section">
+    <h1>API Reference: Tasks</h1>
+
+    <h2>Create Task</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/tasks</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>{ "type": "research|write|analyze|custom", "prompt": "string", "agent_id": "uuid|null" }</code></pre>
+        <p>Returns <code>202 Accepted</code> with task ID.</p>
+        <pre><code>{ "id": "uuid", "status": "pending", "created_at": "iso8601" }</code></pre>
+      </div>
+    </div>
+
+    <h2>Get Task</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/tasks/{id}</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>{ "id":"uuid","type":"research","status":"completed","prompt":"...","result":"...","error":null,"created_at":"...","completed_at":"..." }</code></pre>
+      </div>
+    </div>
+
+    <h2>List Tasks</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/tasks?page=1&amp;limit=20</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API AGENTS ── -->
+  <div id="api-agents" class="docs-section">
+    <h1>API Reference: Agents</h1>
+
+    <h2>Create Agent</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/agents</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>{ "name":"string","role":"string","goal":"string","backstory":"string","tools":["web_search"] }</code></pre>
+      </div>
+    </div>
+
+    <h2>List Agents</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/v1/agents</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+    </div>
+
+    <h2>Run Agent</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/v1/agents/{id}/run</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <pre><code>{ "prompt": "string" }</code></pre>
+        <p>Returns a task ID. Poll <code>/v1/tasks/{task_id}</code> for results.</p>
+      </div>
+    </div>
+
+    <h2>Update / Delete Agent</h2>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-put">PUT</span>
+        <span class="endpoint-path">/v1/agents/{id}</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-header">
+        <span class="method method-delete">DELETE</span>
+        <span class="endpoint-path">/v1/agents/{id}</span>
+        <span class="badge badge-blue">Auth</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.docs-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const section = document.getElementById(id);
+    if (section) section.classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo(0, 0);
+    return false;
+  }
+</script>
+</body>
+</html>

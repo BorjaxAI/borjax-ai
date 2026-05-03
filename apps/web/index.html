@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BorjaxAI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- Auth overlay (shown when not logged in) -->
+<div id="auth-overlay" class="auth-overlay hidden">
+  <div id="auth-container"></div>
+</div>
+
+<!-- App shell -->
+<div id="app" class="app-shell hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <span class="logo-text">BorjaxAI</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="chat">
+        <span class="nav-icon">💬</span>
+        <span>Chat</span>
+      </a>
+      <a href="#" class="nav-item" data-page="tasks">
+        <span class="nav-icon">⚡</span>
+        <span>Tasks</span>
+      </a>
+      <a href="#" class="nav-item" data-page="agents">
+        <span class="nav-icon">🤖</span>
+        <span>Agents</span>
+      </a>
+      <a href="#" class="nav-item" data-page="billing">
+        <span class="nav-icon">💳</span>
+        <span>Billing</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info" id="user-info">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-details">
+          <div class="user-name" id="user-name">Loading...</div>
+          <div class="user-plan" id="user-plan">free</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logout-btn">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <div id="page-container"></div>
+  </main>
+</div>
+
+<script type="module" src="/src/app.js"></script>
+</body>
+</html>

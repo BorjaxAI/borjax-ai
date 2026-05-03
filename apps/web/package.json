@@ -1,0 +1,13 @@
+{
+  "name": "borjaxai-web",
+  "version": "1.0.0",
+  "description": "BorjaxAI Web App",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7"
+  }
+}

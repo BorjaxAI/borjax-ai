@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BorjaxAI — Your AI Team. No Code Required.</title>
+  <meta name="description" content="Build and run AI agents, automate tasks, and chat with Claude — all through one beautiful platform. No code required." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #13141f;
+      --bg-alt:    #1a1b2e;
+      --bg-card:   #1e2035;
+      --border:    #2a2c42;
+      --blue:      #7aa2f7;
+      --purple:    #bb9af7;
+      --cyan:      #7dcfff;
+      --green:     #9ece6a;
+      --orange:    #ff9e64;
+      --red:       #f7768e;
+      --fg:        #c0caf5;
+      --fg-dim:    #787c99;
+      --fg-muted:  #414868;
+      --gradient:  linear-gradient(135deg, #7aa2f7 0%, #bb9af7 50%, #7dcfff 100%);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5%;
+      background: rgba(19,20,31,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: 1.25rem; font-weight: 800; text-decoration: none; color: var(--fg);
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--gradient);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+    }
+
+    .logo span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    nav ul { display: flex; gap: 2rem; list-style: none; }
+
+    nav a {
+      color: var(--fg-dim); text-decoration: none;
+      font-size: .9rem; font-weight: 500;
+      transition: color .2s;
+    }
+
+    nav a:hover { color: var(--fg); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .5rem 1.25rem;
+      border-radius: 8px;
+      font-size: .875rem; font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover { background: #89b4f8; transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+
+    .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+
+    .btn-lg { padding: .8rem 2rem; font-size: 1rem; border-radius: 10px; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 5% 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(122,162,247,.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(187,154,247,.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .35rem 1rem;
+      background: rgba(122,162,247,.12);
+      border: 1px solid rgba(122,162,247,.25);
+      border-radius: 999px;
+      font-size: .8rem; font-weight: 600; color: var(--blue);
+      margin-bottom: 1.5rem;
+      letter-spacing: .05em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -.03em;
+    }
+
+    .hero h1 .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--fg-dim);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    /* Mockup */
+    .mockup {
+      width: 100%;
+      max-width: 900px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,.5);
+      text-align: left;
+    }
+
+    .mockup-bar {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .75rem 1rem;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .mockup-dot:nth-child(1) { background: var(--red); }
+    .mockup-dot:nth-child(2) { background: var(--orange); }
+    .mockup-dot:nth-child(3) { background: var(--green); }
+
+    .mockup-title {
+      margin-left: .5rem;
+      font-size: .8rem; color: var(--fg-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mockup-body {
+      display: grid; grid-template-columns: 220px 1fr;
+      min-height: 380px;
+    }
+
+    .mockup-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 1rem;
+    }
+
+    .mockup-sidebar-item {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .5rem .75rem;
+      border-radius: 6px;
+      font-size: .8rem;
+      color: var(--fg-dim);
+      margin-bottom: .25rem;
+      cursor: default;
+    }
+
+    .mockup-sidebar-item.active {
+      background: rgba(122,162,247,.15);
+      color: var(--blue);
+    }
+
+    .mockup-chat {
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+
+    .chat-bubble {
+      max-width: 75%;
+      padding: .75rem 1rem;
+      border-radius: 12px;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: rgba(122,162,247,.2);
+      border: 1px solid rgba(122,162,247,.3);
+      color: var(--fg);
+    }
+
+    .chat-bubble.ai {
+      align-self: flex-start;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+
+    .chat-bubble .typing {
+      display: inline-flex; gap: 4px; align-items: center;
+    }
+
+    .chat-bubble .typing span {
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      animation: bounce .8s infinite;
+    }
+
+    .chat-bubble .typing span:nth-child(2) { animation-delay: .15s; }
+    .chat-bubble .typing span:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes bounce {
+      0%,80%,100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 5%; }
+    .section-label {
+      font-size: .8rem; font-weight: 700; letter-spacing: .12em;
+      color: var(--blue); text-transform: uppercase; margin-bottom: .75rem;
+    }
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 800; letter-spacing: -.02em;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1.05rem; color: var(--fg-dim);
+      max-width: 560px;
+    }
+    .section-header { margin-bottom: 3.5rem; }
+
+    /* ── FEATURES ── */
+    #features { background: var(--bg-alt); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .feature-card:hover { border-color: var(--blue); transform: translateY(-4px); }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-icon.blue  { background: rgba(122,162,247,.15); }
+    .feature-icon.purple { background: rgba(187,154,247,.15); }
+    .feature-icon.cyan  { background: rgba(125,207,255,.15); }
+    .feature-icon.green { background: rgba(158,206,106,.15); }
+    .feature-icon.orange { background: rgba(255,158,100,.15); }
+
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+    .feature-card p  { font-size: .9rem; color: var(--fg-dim); line-height: 1.6; }
+
+    /* ── PRICING ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .pricing-card:hover { transform: translateY(-4px); }
+
+    .pricing-card.popular {
+      border-color: var(--blue);
+      background: linear-gradient(135deg, rgba(122,162,247,.08), rgba(187,154,247,.04));
+    }
+
+    .popular-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--bg);
+      font-size: .7rem; font-weight: 700; letter-spacing: .08em;
+      padding: .25rem .75rem; border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .pricing-name { font-size: .85rem; font-weight: 700; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem; }
+
+    .pricing-price {
+      display: flex; align-items: baseline; gap: .25rem;
+      margin-bottom: .5rem;
+    }
+
+    .pricing-price .amount { font-size: 2.5rem; font-weight: 900; }
+    .pricing-price .period { color: var(--fg-dim); font-size: .85rem; }
+
+    .pricing-tokens { font-size: .85rem; color: var(--fg-dim); margin-bottom: 1.5rem; }
+
+    .pricing-features { list-style: none; margin-bottom: 2rem; }
+
+    .pricing-features li {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .875rem; color: var(--fg-dim);
+      margin-bottom: .6rem;
+    }
+
+    .pricing-features li::before { content: "✓"; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* ── CTA ── */
+    #cta {
+      background: var(--bg-alt);
+      text-align: center;
+    }
+
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(122,162,247,.1), rgba(187,154,247,.08));
+      border: 1px solid rgba(122,162,247,.2);
+      border-radius: 24px;
+      padding: 5rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 5%;
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand p { font-size: .875rem; color: var(--fg-dim); margin-top: .75rem; max-width: 280px; }
+
+    .footer-col h4 { font-size: .875rem; font-weight: 700; margin-bottom: 1rem; }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col li { margin-bottom: .5rem; }
+
+    .footer-col a { font-size: .85rem; color: var(--fg-dim); text-decoration: none; transition: color .2s; }
+
+    .footer-col a:hover { color: var(--fg); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .8rem; color: var(--fg-dim);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav ul { display: none; }
+      .mockup-body { grid-template-columns: 1fr; }
+      .mockup-sidebar { display: none; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .footer-inner { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-icon">⚡</div>
+    <span>BorjaxAI</span>
+  </a>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="/docs/">Docs</a></li>
+    <li><a href="/app/">Sign In</a></li>
+  </ul>
+  <a href="/app/" class="btn btn-primary">Get Started Free</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">
+    ✨ Powered by Claude 3.5 Sonnet on AWS Bedrock
+  </div>
+  <h1>
+    Your AI Team.<br />
+    <span class="gradient-text">No Code Required.</span>
+  </h1>
+  <p>
+    Build powerful AI agents, automate complex tasks, and chat with Claude —
+    all through one beautiful platform designed for teams who move fast.
+  </p>
+  <div class="hero-actions">
+    <a href="/app/" class="btn btn-primary btn-lg">Start for Free →</a>
+    <a href="/docs/" class="btn btn-outline btn-lg">Read the Docs</a>
+  </div>
+
+  <!-- App mockup -->
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="mockup-dot"></div>
+      <div class="mockup-dot"></div>
+      <div class="mockup-dot"></div>
+      <span class="mockup-title">BorjaxAI — AI Chat</span>
+    </div>
+    <div class="mockup-body">
+      <div class="mockup-sidebar">
+        <div class="mockup-sidebar-item active">💬 Chat</div>
+        <div class="mockup-sidebar-item">⚡ Tasks</div>
+        <div class="mockup-sidebar-item">🤖 Agents</div>
+        <div class="mockup-sidebar-item">💳 Billing</div>
+      </div>
+      <div class="mockup-chat">
+        <div class="chat-bubble user">
+          Research the top 5 AI trends for 2025 and write a 500-word blog post.
+        </div>
+        <div class="chat-bubble ai">
+          I'll research this for you using my web search agent and craft a compelling blog post...
+        </div>
+        <div class="chat-bubble ai">
+          <strong>AI Trends 2025: The Intelligence Revolution</strong><br /><br />
+          The AI landscape is undergoing its most dramatic transformation yet. Here are the five trends reshaping every industry...
+        </div>
+        <div class="chat-bubble ai">
+          <div class="typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section-header">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything your AI team needs</h2>
+    <p class="section-subtitle">From simple chats to complex multi-step agent workflows — BorjaxAI handles it all.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon blue">💬</div>
+      <h3>AI Chat</h3>
+      <p>Stream conversations with Claude 3.5 Sonnet in real time. Full conversation history, context awareness, and markdown rendering built in.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon purple">⚡</div>
+      <h3>Background Tasks</h3>
+      <p>Submit long-running tasks and let them run asynchronously. Celery-powered queue processes research, writing, analysis while you focus.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon cyan">🤖</div>
+      <h3>Agent Builder</h3>
+      <p>Design custom AI agents with specific roles, backstories, and tool access. Combine them into CrewAI crews for complex multi-step work.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon green">🔍</div>
+      <h3>Research Agent</h3>
+      <p>Autonomous research crew that gathers information, synthesizes findings, and delivers structured reports — fully automated.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon orange">📊</div>
+      <h3>API Access</h3>
+      <p>Full REST API with JWT auth. Integrate BorjaxAI into your own apps, workflows, and automation pipelines with our developer SDK.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon blue">🔒</div>
+      <h3>Secure & Scalable</h3>
+      <p>Enterprise-grade security with JWT authentication, token usage tracking, rate limiting, and team access controls built in from day one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div class="section-header" style="text-align:center;">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <p class="section-subtitle" style="margin:0 auto;">Start free, scale as you grow. No hidden fees, no surprises.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">
+        <span class="amount">$0</span>
+        <span class="period">/ month</span>
+      </div>
+      <div class="pricing-tokens">10,000 tokens / month</div>
+      <ul class="pricing-features">
+        <li>AI Chat (Claude 3.5 Sonnet)</li>
+        <li>5 background tasks / month</li>
+        <li>1 custom agent</li>
+        <li>Community support</li>
+        <li>API access</li>
+      </ul>
+      <a href="/app/" class="btn btn-outline btn-full">Get Started Free</a>
+    </div>
+
+    <div class="pricing-card popular">
+      <div class="popular-badge">Most Popular</div>
+      <div class="pricing-name">Starter</div>
+      <div class="pricing-price">
+        <span class="amount">$9</span>
+        <span class="period">/ month</span>
+      </div>
+      <div class="pricing-tokens">100,000 tokens / month</div>
+      <ul class="pricing-features">
+        <li>Everything in Free</li>
+        <li>Unlimited background tasks</li>
+        <li>10 custom agents</li>
+        <li>Email support</li>
+        <li>Conversation history (90 days)</li>
+      </ul>
+      <a href="/app/" class="btn btn-primary btn-full">Get Starter</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">
+        <span class="amount">$29</span>
+        <span class="period">/ month</span>
+      </div>
+      <div class="pricing-tokens">500,000 tokens / month</div>
+      <ul class="pricing-features">
+        <li>Everything in Starter</li>
+        <li>Unlimited custom agents</li>
+        <li>Priority queue processing</li>
+        <li>Priority support (24h)</li>
+        <li>Usage analytics dashboard</li>
+      </ul>
+      <a href="/app/" class="btn btn-outline btn-full">Get Pro</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-name">Agency</div>
+      <div class="pricing-price">
+        <span class="amount">$99</span>
+        <span class="period">/ month</span>
+      </div>
+      <div class="pricing-tokens">2,000,000 tokens / month</div>
+      <ul class="pricing-features">
+        <li>Everything in Pro</li>
+        <li>Team seats (up to 10)</li>
+        <li>Custom agent templates</li>
+        <li>Dedicated support (4h SLA)</li>
+        <li>Custom integrations</li>
+      </ul>
+      <a href="/app/" class="btn btn-outline btn-full">Get Agency</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-inner">
+    <div class="section-label" style="text-align:center;">Ready to start?</div>
+    <h2 class="section-title" style="text-align:center;">Build your AI team today</h2>
+    <p style="text-align:center; color:var(--fg-dim); margin-bottom:2rem; max-width:500px; margin-left:auto; margin-right:auto;">
+      Join thousands of teams using BorjaxAI to automate work, accelerate research, and ship faster with AI.
+    </p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="/app/" class="btn btn-primary btn-lg">Start for Free →</a>
+      <a href="/docs/" class="btn btn-outline btn-lg">View Documentation</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="logo" style="display:inline-flex; margin-bottom:.5rem;">
+        <div class="logo-icon">⚡</div>
+        <span>BorjaxAI</span>
+      </a>
+      <p>Your AI team, no code required. Powered by AWS Bedrock and Claude.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="/app/">Dashboard</a></li>
+        <li><a href="/docs/">API Docs</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="/docs/">Documentation</a></li>
+        <li><a href="/docs/#quickstart">Quick Start</a></li>
+        <li><a href="/docs/#api">API Reference</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 BorjaxAI. All rights reserved.</span>
+    <span>Built with ⚡ on AWS Bedrock</span>
+  </div>
+</footer>
+
+</body>
+</html>

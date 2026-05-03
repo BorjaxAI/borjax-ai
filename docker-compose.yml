@@ -1,0 +1,88 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-borjaxai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-borjaxai_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-borjaxai}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-borjaxai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai:
+    build:
+      context: ./apps/ai
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://borjaxai:borjaxai_dev@postgres:5432/borjaxai}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/ai:/app
+
+  worker:
+    build:
+      context: ./apps/ai
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A workers.celery_app worker --loglevel=info --concurrency=4
+    env_file: .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://borjaxai:borjaxai_dev@postgres:5432/borjaxai}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/ai:/app
+
+  gateway:
+    build:
+      context: ./apps/gateway
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - AI_SERVICE_URL=http://ai:8000
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ai
+
+volumes:
+  postgres_data:
+  redis_data:
