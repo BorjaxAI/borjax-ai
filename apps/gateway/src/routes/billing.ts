@@ -5,7 +5,7 @@ import { authMiddleware } from "../middleware/auth";
 const billing = new Hono();
 
 const getStripe = () =>
-  new Stripe(process.env.STRIPE_SECRET_KEY ?? "", { apiVersion: "2024-12-18.acacia" });
+  new Stripe(process.env.STRIPE_SECRET_KEY ?? "", { apiVersion: "2025-02-24.acacia" });
 
 const PRICE_IDS: Record<string, string> = {
   starter: process.env.STRIPE_PRICE_STARTER ?? "",
