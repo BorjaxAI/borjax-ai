@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: Tasks — BorjaxAI Docs</title>
+  <meta name="description" content="BorjaxAI Tasks API reference: create tasks, poll for results, status lifecycle, and full examples." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link active">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="api-tasks.html">API Reference</a>
+      <span>/</span>
+      <span class="current">Tasks</span>
+    </div>
+
+    <article class="article">
+      <h1>API: Tasks</h1>
+      <p class="lead">Create background AI tasks, poll for status, and retrieve results. Tasks run asynchronously via Celery and can take 15 seconds to 3 minutes depending on complexity.</p>
+
+      <h2 id="create-task">Create Task</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/tasks</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Submit a new background task. Returns immediately with a task ID and <code>pending</code> status.</p>
+          <h3>Request Body</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "type": "research",
+  "prompt": "Research the competitive landscape of AI writing tools in 2026.",
+  "agent_id": null
+}</code></pre>
+          </div>
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>type</code></td><td>string</td><td>Yes</td><td>One of: <code>research</code>, <code>write</code>, <code>analyze</code>, <code>scrape</code>, <code>custom</code></td></tr>
+              <tr><td><code>prompt</code></td><td>string</td><td>Yes</td><td>The task instructions. Be specific for best results.</td></tr>
+              <tr><td><code>agent_id</code></td><td>string | null</td><td>No</td><td>Required when <code>type</code> is <code>custom</code>. The agent's UUID.</td></tr>
+            </tbody>
+          </table>
+          <h3>Response 202 Accepted</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "id": "task_7f3a1b2c",
+  "type": "research",
+  "status": "pending",
+  "prompt": "Research the competitive landscape...",
+  "agent_id": null,
+  "created_at": "2026-05-03T12:00:00Z"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="get-task">Get Task</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <span class="endpoint-path">/v1/tasks/{id}</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Get the current status and result of a task. Poll this endpoint until <code>status</code> is <code>completed</code> or <code>failed</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl https://api.borjaxai.com/v1/tasks/task_7f3a1b2c \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+          </div>
+          <h3>Response 200 (completed)</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "id": "task_7f3a1b2c",
+  "type": "research",
+  "status": "completed",
+  "prompt": "Research the competitive landscape of AI writing tools in 2026.",
+  "result": "# AI Writing Tools Landscape 2026\n\n## Overview\n...",
+  "error": null,
+  "tokens_used": 4821,
+  "agent_id": null,
+  "created_at": "2026-05-03T12:00:00Z",
+  "completed_at": "2026-05-03T12:01:47Z"
+}</code></pre>
+          </div>
+          <h3>Response 200 (failed)</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "id": "task_7f3a1b2c",
+  "status": "failed",
+  "result": null,
+  "error": "Bedrock service temporarily unavailable. Please retry.",
+  "completed_at": "2026-05-03T12:00:45Z"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="list-tasks">List Tasks</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <span class="endpoint-path">/v1/tasks</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns a paginated list of tasks for the authenticated user, ordered by most recent.</p>
+          <h3>Query Parameters</h3>
+          <table>
+            <thead><tr><th>Param</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>status</code></td><td>string</td><td>—</td><td>Filter by status: <code>pending</code>, <code>running</code>, <code>completed</code>, <code>failed</code></td></tr>
+              <tr><td><code>type</code></td><td>string</td><td>—</td><td>Filter by task type</td></tr>
+              <tr><td><code>page</code></td><td>integer</td><td>1</td><td>Page number</td></tr>
+              <tr><td><code>limit</code></td><td>integer</td><td>20</td><td>Results per page (max 50)</td></tr>
+            </tbody>
+          </table>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code># Get all completed research tasks
+curl "https://api.borjaxai.com/v1/tasks?status=completed&type=research&page=1&limit=10" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="status-lifecycle">Status Lifecycle</h2>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+        <pre><code>  POST /v1/tasks
+       ↓
+  ┌──────────┐
+  │ pending  │  Queued in Celery, waiting for worker
+  └────┬─────┘
+       ↓  worker picks up
+  ┌──────────┐
+  │ running  │  CrewAI crew executing (15s – 3min)
+  └────┬─────┘
+       ↓
+  ┌──────────────────────┬───────────────────────┐
+  │   completed          │   failed               │
+  │   result: "..."      │   error: "..."         │
+  │   tokens_used: N     │   tokens_used: partial │
+  └──────────────────────┴───────────────────────┘</code></pre>
+      </div>
+
+      <h2 id="polling-example">Full Polling Example (JavaScript)</h2>
+      <p>Submit a task and poll until it completes, with exponential backoff:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript</span><button class="copy-btn">Copy</button></div>
+        <pre><code>const BASE = 'https://api.borjaxai.com/v1';
+const headers = { 'Authorization': `Bearer ${ACCESS_TOKEN}`, 'Content-Type': 'application/json' };
+
+async function submitTask(type, prompt, agentId = null) {
+  const res = await fetch(`${BASE}/tasks`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ type, prompt, agent_id: agentId }),
+  });
+  if (!res.ok) throw new Error(`Submit failed: ${res.status}`);
+  return (await res.json()).id;
+}
+
+async function pollTask(taskId, intervalMs = 3000, maxAttempts = 60) {
+  for (let i = 0; i < maxAttempts; i++) {
+    await new Promise(r => setTimeout(r, intervalMs));
+
+    const res = await fetch(`${BASE}/tasks/${taskId}`, { headers });
+    const task = await res.json();
+
+    console.log(`[${i + 1}] Status: ${task.status}`);
+
+    if (task.status === 'completed') return task.result;
+    if (task.status === 'failed') throw new Error(`Task failed: ${task.error}`);
+
+    // Exponential backoff after 10 attempts
+    if (i > 10) intervalMs = Math.min(intervalMs * 1.5, 15000);
+  }
+  throw new Error('Task timed out');
+}
+
+// Usage
+const taskId = await submitTask('research', 'Research AI trends in healthcare for 2026.');
+console.log('Task submitted:', taskId);
+const result = await pollTask(taskId);
+console.log('Result:', result);</code></pre>
+      </div>
+
+      <h2 id="task-types-reference">Task Types Reference</h2>
+      <table>
+        <thead><tr><th>Type</th><th>CrewAI Crew</th><th>Avg Duration</th><th>Token Usage</th></tr></thead>
+        <tbody>
+          <tr><td><code>research</code></td><td>Researcher + Analyst</td><td>45–120s</td><td>2,000–6,000</td></tr>
+          <tr><td><code>write</code></td><td>Researcher + Writer + Editor</td><td>30–90s</td><td>1,500–4,000</td></tr>
+          <tr><td><code>analyze</code></td><td>Analyst + Reporter</td><td>20–60s</td><td>1,000–3,000</td></tr>
+          <tr><td><code>scrape</code></td><td>Browser + Extractor</td><td>30–90s</td><td>1,500–5,000</td></tr>
+          <tr><td><code>custom</code></td><td>Your custom agent</td><td>Varies</td><td>Varies</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <nav class="page-nav">
+      <a href="api-chat.html" class="page-nav-prev">← API: Chat</a>
+      <a href="api-agents.html" class="page-nav-next">API: Agents →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

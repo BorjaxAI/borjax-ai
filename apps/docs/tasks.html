@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background Tasks — BorjaxAI Docs</title>
+  <meta name="description" content="Submit long-running AI tasks — research, writing, analysis — to BorjaxAI's async task queue." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link active">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="tasks.html">Features</a>
+      <span>/</span>
+      <span class="current">Background Tasks</span>
+    </div>
+
+    <article class="article">
+      <h1>Background Tasks</h1>
+      <p class="lead">Submit complex, long-running AI work to BorjaxAI's async Celery queue. Tasks run in the background — you don't wait. Poll for results when ready.</p>
+
+      <h2 id="tasks-vs-chat">Tasks vs Chat</h2>
+      <p>Chat is great for interactive, back-and-forth conversations. Background tasks are built for <em>deep work</em> — research that takes 2 minutes, a 3,000-word article, a full data analysis. Tasks run asynchronously so your application stays responsive.</p>
+      <table>
+        <thead><tr><th></th><th>Chat</th><th>Background Task</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Interaction model</strong></td><td>Real-time SSE stream</td><td>Submit → poll</td></tr>
+          <tr><td><strong>Typical duration</strong></td><td>1–30 seconds</td><td>15 seconds – 3 minutes</td></tr>
+          <tr><td><strong>Best for</strong></td><td>Q&A, code help, conversation</td><td>Research, writing, analysis, scraping</td></tr>
+          <tr><td><strong>Result</strong></td><td>Streamed to client</td><td>Stored, fetch when ready</td></tr>
+          <tr><td><strong>Retry on failure</strong></td><td>Manual</td><td>Automatic (Celery retry)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="task-types">Task Types</h2>
+      <table>
+        <thead><tr><th>Type</th><th>Description</th><th>Example Prompt</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>research</code></td>
+            <td>Deep research using a Research + Analyst CrewAI crew. Searches web, synthesizes findings, writes a structured report.</td>
+            <td>"Research the competitive landscape of AI coding assistants in 2026 and identify market gaps."</td>
+          </tr>
+          <tr>
+            <td><code>write</code></td>
+            <td>Long-form content creation. Outlines, drafts, and polishes articles, blog posts, reports, or documentation.</td>
+            <td>"Write a 1,500-word blog post about the benefits of serverless architecture for startups."</td>
+          </tr>
+          <tr>
+            <td><code>analyze</code></td>
+            <td>Analyzes data, text, code, or documents. Provides structured insights, recommendations, and summaries.</td>
+            <td>"Analyze the following financial data and identify trends, anomalies, and recommendations: [data]"</td>
+          </tr>
+          <tr>
+            <td><code>scrape</code></td>
+            <td>Structured web data extraction. Browses a URL or set of URLs and extracts structured data to a specified format.</td>
+            <td>"Scrape the top 10 results from a search for 'best project management tools 2026' and extract product names, pricing, and key features."</td>
+          </tr>
+          <tr>
+            <td><code>custom</code></td>
+            <td>Run a custom agent you created via the Agent Builder. Pass your <code>agent_id</code> in the request.</td>
+            <td>Any prompt — the agent's role, goal, and backstory define the behavior.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="submitting-a-task">Submitting a Task</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num"></div>
+          <div class="step-body">
+            <div class="step-title">POST to /v1/tasks</div>
+            <div class="step-desc">Include the task type and your prompt. For <code>custom</code> tasks, also include your <code>agent_id</code>.
+              <div class="code-block" style="margin-top:.5rem">
+                <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                <pre><code>curl -X POST https://api.borjaxai.com/v1/tasks \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "research",
+    "prompt": "Research the top 5 AI trends shaping enterprise software in 2026.",
+    "agent_id": null
+  }'</code></pre>
+              </div>
+              Response (202 Accepted):
+              <div class="code-block" style="margin-top:.5rem">
+                <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+                <pre><code>{
+  "id": "task_7f3a1b2c",
+  "type": "research",
+  "status": "pending",
+  "prompt": "Research the top 5 AI trends...",
+  "created_at": "2026-05-03T12:00:00Z"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num"></div>
+          <div class="step-body">
+            <div class="step-title">Poll for status</div>
+            <div class="step-desc">Check every 3–5 seconds. The task typically completes in 30–120 seconds.
+              <div class="code-block" style="margin-top:.5rem">
+                <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                <pre><code>curl https://api.borjaxai.com/v1/tasks/task_7f3a1b2c \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num"></div>
+          <div class="step-body">
+            <div class="step-title">Read the result</div>
+            <div class="step-desc">When <code>status === "completed"</code>, the <code>result</code> field contains the full output.
+              <div class="code-block" style="margin-top:.5rem">
+                <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+                <pre><code>{
+  "id": "task_7f3a1b2c",
+  "type": "research",
+  "status": "completed",
+  "prompt": "Research the top 5 AI trends...",
+  "result": "# Top 5 AI Trends in Enterprise Software (2026)\n\n## 1. Agentic Workflows...",
+  "tokens_used": 4821,
+  "created_at": "2026-05-03T12:00:00Z",
+  "completed_at": "2026-05-03T12:01:47Z"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="task-statuses">Task Status Lifecycle</h2>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+        <pre><code>  POST /tasks
+      ↓
+  ┌─────────┐
+  │ pending │  ← In Celery queue, waiting for a worker
+  └────┬────┘
+       ↓ worker picks up
+  ┌─────────┐
+  │ running │  ← CrewAI crew is executing
+  └────┬────┘
+       ↓
+  ┌─────────────────────────────────────┐
+  │ completed  │  failed                │
+  │ result set │  error message set     │
+  └────────────────────────────────────-┘</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-pending">pending</span></td><td>Task is queued and waiting for a Celery worker to pick it up.</td></tr>
+          <tr><td><span class="status-running">running</span></td><td>A worker is actively executing the task. CrewAI agents are running.</td></tr>
+          <tr><td><span class="status-done">completed</span></td><td>Task finished successfully. Read the <code>result</code> field.</td></tr>
+          <tr><td><span class="status-failed">failed</span></td><td>Task encountered an error. Read the <code>error</code> field for the reason.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="token-usage">Token Usage for Tasks</h2>
+      <p>Background tasks consume more tokens than a simple chat message because they use multi-agent CrewAI crews. Each agent in the crew calls Claude independently.</p>
+      <table>
+        <thead><tr><th>Task Type</th><th>Typical Token Usage</th></tr></thead>
+        <tbody>
+          <tr><td><code>research</code></td><td>2,000 – 6,000 tokens</td></tr>
+          <tr><td><code>write</code></td><td>1,500 – 4,000 tokens</td></tr>
+          <tr><td><code>analyze</code></td><td>1,000 – 3,000 tokens</td></tr>
+          <tr><td><code>scrape</code></td><td>1,500 – 5,000 tokens</td></tr>
+          <tr><td><code>custom</code></td><td>Varies by agent complexity</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div><strong>Example prompts that work great as tasks:</strong><br/>
+        • "Research and summarize the latest news about [topic] from the past 7 days."<br/>
+        • "Write a professional email to a prospective client introducing our product."<br/>
+        • "Analyze this dataset and identify the top 3 opportunities: [data]"<br/>
+        • "Create a 10-item FAQ for a SaaS product that does [description]."</div>
+      </div>
+    </article>
+
+    <nav class="page-nav">
+      <a href="chat.html" class="page-nav-prev">← AI Chat</a>
+      <a href="agents.html" class="page-nav-next">Agent Builder →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

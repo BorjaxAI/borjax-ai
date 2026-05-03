@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog — BorjaxAI Docs</title>
+  <meta name="description" content="BorjaxAI changelog: version history, new features, bug fixes, and improvements." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link active">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <span class="current">Changelog</span>
+    </div>
+
+    <article class="article">
+      <h1>Changelog</h1>
+      <p class="lead">All notable changes to BorjaxAI. We follow <a href="https://semver.org" target="_blank" rel="noopener">semantic versioning</a>.</p>
+
+      <!-- v0.1.0 -->
+      <div class="changelog-entry" id="v0-1-0">
+        <div class="changelog-version">v0.1.0</div>
+        <div class="changelog-date">May 3, 2026 — Initial Release 🎉</div>
+        <div class="changelog-tags">
+          <span class="badge badge-green">New</span>
+          <span class="badge badge-blue">Public Beta</span>
+        </div>
+
+        <p>This is the first public release of BorjaxAI — a full AI platform with chat, tasks, and agents. The platform is stable and ready for production use.</p>
+
+        <h3>✨ New Features</h3>
+        <ul>
+          <li><strong>AI Chat with Streaming</strong> — Real-time streaming chat powered by Claude 3.5 Sonnet via AWS Bedrock. Full Server-Sent Events (SSE) support with conversation history and context memory.</li>
+          <li><strong>Background Tasks</strong> — Async task queue via Celery + Redis. Four built-in task types: <code>research</code>, <code>write</code>, <code>analyze</code>, <code>scrape</code>. Custom agent tasks supported.</li>
+          <li><strong>Agent Builder</strong> — No-code interface and API for creating custom AI agents with roles, goals, backstories, and tool access. Powered by CrewAI with pre-built crew templates.</li>
+          <li><strong>Guest Mode</strong> — Try BorjaxAI without an account. 5,000 free tokens per guest session, valid for 24 hours.</li>
+          <li><strong>Freemium Billing</strong> — Four plans: Free (10K tokens), Starter ($9/mo, 100K), Pro ($29/mo, 500K), Agency ($99/mo, 2M). Powered by Stripe.</li>
+          <li><strong>REST API</strong> — Full API with JWT authentication, SSE streaming, and consistent JSON responses. Base URL: <code>https://api.borjaxai.com/v1</code></li>
+          <li><strong>Web Application</strong> — Full-featured React + TypeScript frontend deployed on CloudFront at <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank">d18813a3in0ap7.cloudfront.net</a>.</li>
+          <li><strong>Documentation Site</strong> — Comprehensive docs with 3-column layout, live search, copy buttons, callouts, and TOC navigation.</li>
+        </ul>
+
+        <h3>🏗️ Infrastructure</h3>
+        <ul>
+          <li><strong>API Gateway</strong>: Hono (TypeScript) on AWS Lambda + API Gateway. Handles auth, routing, and Stripe billing.</li>
+          <li><strong>AI Backend</strong>: FastAPI (Python) on AWS ECS Fargate. Handles LLM calls, CrewAI orchestration, and PostgreSQL reads/writes.</li>
+          <li><strong>Task Queue</strong>: Celery workers on ECS with Redis (ElastiCache) as broker and result backend.</li>
+          <li><strong>Database</strong>: PostgreSQL 16 on RDS with pgvector extension for future semantic search.</li>
+          <li><strong>LLM</strong>: AWS Bedrock — Claude 3.5 Sonnet (<code>anthropic.claude-3-5-sonnet-20241022-v2:0</code>). No OpenAI dependency.</li>
+          <li><strong>Frontend</strong>: React 18 + TypeScript + Vite + Tailwind CSS, deployed to S3 + CloudFront.</li>
+        </ul>
+
+        <h3>🔒 Security</h3>
+        <ul>
+          <li>JWT-based authentication with HS256 signing and configurable expiry</li>
+          <li>Password hashing via bcrypt</li>
+          <li>Rate limiting on all auth endpoints (5 attempts per minute per IP)</li>
+          <li>CORS configured with strict origin allow-list</li>
+          <li>All traffic over HTTPS/TLS 1.3</li>
+        </ul>
+
+        <h3>⚠️ Known Limitations</h3>
+        <ul>
+          <li>Conversation history retention on Free plan is limited to 30 days</li>
+          <li>Guest sessions cannot be upgraded to a registered account mid-session (create a new account instead)</li>
+          <li>The <code>browser</code> tool for agents is in beta and may be less reliable on JS-heavy pages</li>
+          <li>No webhooks yet — poll for task status (coming in v0.2.0)</li>
+          <li>No file upload support yet (coming in v0.2.0)</li>
+        </ul>
+
+        <h3>🔮 Coming in v0.2.0</h3>
+        <ul>
+          <li>Webhooks: receive a POST when a task completes</li>
+          <li>File uploads: attach PDFs, CSVs, and images to tasks</li>
+          <li>Task scheduling: run tasks on a cron schedule</li>
+          <li>Agent templates marketplace</li>
+          <li>Usage analytics dashboard</li>
+          <li>Team collaboration features on Pro plan</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">📬</span>
+        <div><strong>Stay updated:</strong> Follow BorjaxAI on <a href="https://github.com/borjaxai" target="_blank" rel="noopener">GitHub</a> for release announcements. Breaking changes will always be announced with a major version bump and a minimum 30-day deprecation notice.</div>
+      </div>
+    </article>
+
+    <nav class="page-nav">
+      <a href="api-agents.html" class="page-nav-prev">← API: Agents</a>
+      <span></span>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

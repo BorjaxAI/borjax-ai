@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: Agents — BorjaxAI Docs</title>
+  <meta name="description" content="BorjaxAI Agents API reference: create, list, update, delete agents and run them as tasks." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link active">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="api-agents.html">API Reference</a>
+      <span>/</span>
+      <span class="current">Agents</span>
+    </div>
+
+    <article class="article">
+      <h1>API: Agents</h1>
+      <p class="lead">Create, manage, and run custom AI agents. Each agent is a reusable persona with a role, goal, backstory, and tool access. Running an agent creates a background task.</p>
+
+      <h2 id="create-agent">Create Agent</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/agents</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Create a new custom agent. The agent is saved to your account and can be run any number of times.</p>
+          <h3>Request Body</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "name": "Competitive Intelligence Analyst",
+  "role": "Senior Competitive Intelligence Analyst",
+  "goal": "Analyze competitor products, pricing, and strategies to identify opportunities and threats",
+  "backstory": "You are an experienced competitive intelligence professional with 10+ years at top-tier consulting firms. You specialize in SaaS markets and have developed frameworks for rapid competitive analysis. You always provide data-backed insights with clear business implications.",
+  "tools": ["web_search", "summarize", "analyze"],
+  "verbose": false
+}</code></pre>
+          </div>
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>string</td><td>Yes</td><td>Friendly display name for the agent</td></tr>
+              <tr><td><code>role</code></td><td>string</td><td>Yes</td><td>Professional title (e.g., "Senior Data Analyst")</td></tr>
+              <tr><td><code>goal</code></td><td>string</td><td>Yes</td><td>What the agent optimizes for — guides CrewAI task execution</td></tr>
+              <tr><td><code>backstory</code></td><td>string</td><td>Recommended</td><td>Rich background that shapes Claude's persona — key for quality</td></tr>
+              <tr><td><code>tools</code></td><td>string[]</td><td>No</td><td>Tools the agent can use. See tools reference below.</td></tr>
+              <tr><td><code>verbose</code></td><td>boolean</td><td>No</td><td>Default <code>false</code>. Set <code>true</code> to include agent reasoning in the result.</td></tr>
+            </tbody>
+          </table>
+          <h3>Response 201 Created</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "id": "agent_8a3f2d1e",
+  "name": "Competitive Intelligence Analyst",
+  "role": "Senior Competitive Intelligence Analyst",
+  "goal": "Analyze competitor products, pricing, and strategies...",
+  "backstory": "You are an experienced competitive intelligence professional...",
+  "tools": ["web_search", "summarize", "analyze"],
+  "verbose": false,
+  "created_at": "2026-05-03T12:00:00Z",
+  "updated_at": "2026-05-03T12:00:00Z"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="list-agents">List Agents</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <span class="endpoint-path">/v1/agents</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns all agents belonging to the authenticated user.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl https://api.borjaxai.com/v1/agents \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+          </div>
+          <h3>Response 200</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>[
+  {
+    "id": "agent_8a3f2d1e",
+    "name": "Competitive Intelligence Analyst",
+    "role": "Senior Competitive Intelligence Analyst",
+    "tools": ["web_search", "summarize", "analyze"],
+    "created_at": "2026-05-03T12:00:00Z"
+  }
+]</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="update-agent">Update Agent</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-put">PUT</span>
+          <span class="endpoint-path">/v1/agents/{id}</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Update any field on an existing agent. All fields are optional — only send the fields you want to change.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl -X PUT https://api.borjaxai.com/v1/agents/agent_8a3f2d1e \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tools": ["web_search", "summarize", "analyze", "browser"],
+    "verbose": true
+  }'</code></pre>
+          </div>
+          <p>Returns the full updated agent object with <code>200 OK</code>.</p>
+        </div>
+      </div>
+
+      <h2 id="delete-agent">Delete Agent</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-delete">DELETE</span>
+          <span class="endpoint-path">/v1/agents/{id}</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Permanently delete an agent. This does not delete tasks that were previously run with this agent.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl -X DELETE https://api.borjaxai.com/v1/agents/agent_8a3f2d1e \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+          </div>
+          <p>Returns <code>204 No Content</code> on success.</p>
+        </div>
+      </div>
+
+      <h2 id="run-agent">Run Agent</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/agents/{id}/run</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Execute the agent with a given prompt. Creates a background task and returns the <code>task_id</code> immediately. Poll <code>GET /v1/tasks/{task_id}</code> for the result.</p>
+          <h3>Request Body</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "prompt": "Analyze BorjaxAI's top 3 competitors: their pricing, feature gaps, and positioning."
+}</code></pre>
+          </div>
+          <h3>Response 202 Accepted</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "task_id": "task_2b4f8e1a"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="full-example">Full End-to-End Example</h2>
+      <p>Create an agent, run it, and retrieve the result in one flow:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript</span><button class="copy-btn">Copy</button></div>
+        <pre><code>const BASE = 'https://api.borjaxai.com/v1';
+const headers = {
+  'Authorization': `Bearer ${ACCESS_TOKEN}`,
+  'Content-Type': 'application/json',
+};
+
+// 1. Create the agent
+const createRes = await fetch(`${BASE}/agents`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    name: 'Market Researcher',
+    role: 'Senior Market Research Analyst',
+    goal: 'Research markets and deliver actionable intelligence reports',
+    backstory: 'You are a seasoned analyst with 12 years at top consulting firms. You synthesize complex information into clear, actionable insights with supporting data.',
+    tools: ['web_search', 'summarize'],
+  }),
+});
+const agent = await createRes.json();
+console.log('Agent created:', agent.id);
+
+// 2. Run the agent
+const runRes = await fetch(`${BASE}/agents/${agent.id}/run`, {
+  method: 'POST',
+  headers,
+  body: JSON.stringify({
+    prompt: 'Research the AI developer tools market in 2026: size, key players, growth drivers, and emerging opportunities.',
+  }),
+});
+const { task_id } = await runRes.json();
+console.log('Task submitted:', task_id);
+
+// 3. Poll for result
+async function poll(taskId, delay = 5000) {
+  await new Promise(r => setTimeout(r, delay));
+  const res = await fetch(`${BASE}/tasks/${taskId}`, { headers });
+  const task = await res.json();
+  if (task.status === 'completed') return task.result;
+  if (task.status === 'failed') throw new Error(task.error);
+  return poll(taskId, delay);
+}
+
+const result = await poll(task_id);
+console.log('Result:', result);</code></pre>
+      </div>
+
+      <h2 id="tools-reference">Tools Reference</h2>
+      <table>
+        <thead><tr><th>Tool ID</th><th>Description</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td><code>web_search</code></td><td>Search the web using a search engine. Returns top results with summaries.</td><td>Research, current events, fact-checking</td></tr>
+          <tr><td><code>summarize</code></td><td>Condense long documents or web pages into key points and takeaways.</td><td>Content analysis, report generation</td></tr>
+          <tr><td><code>code</code></td><td>Write, analyze, refactor, and debug code in any popular language.</td><td>Technical tasks, code review, scripting</td></tr>
+          <tr><td><code>browser</code></td><td>Navigate to a URL, extract page content, and parse structured data.</td><td>Web scraping, page analysis, data extraction</td></tr>
+          <tr><td><code>analyze</code></td><td>Perform structured analysis on text, data tables, or documents.</td><td>Data analysis, competitive analysis, reporting</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <nav class="page-nav">
+      <a href="api-tasks.html" class="page-nav-prev">← API: Tasks</a>
+      <a href="changelog.html" class="page-nav-next">Changelog →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

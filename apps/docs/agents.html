@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Builder — BorjaxAI Docs</title>
+  <meta name="description" content="Build custom AI agents with roles, goals, tools, and backstories using BorjaxAI's no-code Agent Builder." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link active">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="agents.html">Features</a>
+      <span>/</span>
+      <span class="current">Agent Builder</span>
+    </div>
+
+    <article class="article">
+      <h1>Agent Builder</h1>
+      <p class="lead">Design custom AI agents with specific roles, goals, backstories, and tool access. Agents run as background tasks via CrewAI and can be reused indefinitely.</p>
+
+      <h2 id="what-is-an-agent">What Is an Agent?</h2>
+      <p>An agent is a configured AI persona with a specific <strong>role</strong> (who it is), <strong>goal</strong> (what it optimizes for), and <strong>backstory</strong> (the expertise it draws from). When you run an agent against a prompt, it uses those attributes to shape its reasoning, tone, and output quality.</p>
+      <p>Agents are powered by <a href="https://crewai.com" target="_blank" rel="noopener">CrewAI</a> under the hood. Each agent instance you create is saved to your account and can be run as many times as you like with different prompts.</p>
+
+      <h2 id="comparison">Agent vs Chat vs Task</h2>
+      <table>
+        <thead><tr><th>Feature</th><th>Chat</th><th>Task (built-in)</th><th>Custom Agent</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Persona / Role</strong></td><td>Generic Claude</td><td>Predefined crew</td><td>Fully customizable</td></tr>
+          <tr><td><strong>Tool access</strong></td><td>Built-in</td><td>Fixed per type</td><td>Choose from toolbox</td></tr>
+          <tr><td><strong>Reusable</strong></td><td>—</td><td>By type only</td><td>Yes, saved to account</td></tr>
+          <tr><td><strong>Response mode</strong></td><td>SSE stream</td><td>Poll</td><td>Poll (returns task_id)</td></tr>
+          <tr><td><strong>Best for</strong></td><td>Conversation</td><td>Standard workflows</td><td>Specialized, repeatable work</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="building-your-first-agent">Building Your First Agent</h2>
+      <p>You can build an agent in the web app UI or via the API. Here's how to do it via the API:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code>curl -X POST https://api.borjaxai.com/v1/agents \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "SEO Content Writer",
+    "role": "Senior SEO Content Strategist",
+    "goal": "Create highly engaging, SEO-optimized content that ranks well and converts readers.",
+    "backstory": "You are an experienced content strategist with 8+ years writing for tech companies. You understand search intent, keyword strategy, and how to write content that both search engines and humans love. You always structure articles with clear headings, include data-driven insights, and end with a strong CTA.",
+    "tools": ["web_search", "summarize"]
+  }'</code></pre>
+      </div>
+      <p>Response:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+        <pre><code>{
+  "id": "agent_8a3f2d1e",
+  "name": "SEO Content Writer",
+  "role": "Senior SEO Content Strategist",
+  "goal": "Create highly engaging, SEO-optimized content...",
+  "tools": ["web_search", "summarize"],
+  "created_at": "2026-05-03T12:00:00Z"
+}</code></pre>
+      </div>
+
+      <h3 id="field-reference">Field Reference</h3>
+      <table>
+        <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>Yes</td><td>A friendly name for your agent (e.g., "Market Researcher")</td></tr>
+          <tr><td><code>role</code></td><td>Yes</td><td>The agent's professional title — shapes how it presents expertise</td></tr>
+          <tr><td><code>goal</code></td><td>Yes</td><td>What the agent optimizes for — used by CrewAI to guide task execution</td></tr>
+          <tr><td><code>backstory</code></td><td>Recommended</td><td>Richly described background — dramatically improves output quality</td></tr>
+          <tr><td><code>tools</code></td><td>No</td><td>Array of tool names the agent can use (see Available Tools below)</td></tr>
+          <tr><td><code>verbose</code></td><td>No</td><td>Boolean. If true, logs detailed reasoning steps (useful for debugging)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="available-tools">Available Tools</h2>
+      <table>
+        <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>web_search</code></td><td>Search the web for up-to-date information, news, and data.</td></tr>
+          <tr><td><code>summarize</code></td><td>Condense long text, articles, or documents into key points.</td></tr>
+          <tr><td><code>code</code></td><td>Write, analyze, and reason about code in any language.</td></tr>
+          <tr><td><code>browser</code></td><td>Navigate to a URL, extract content, and parse structured data.</td></tr>
+          <tr><td><code>analyze</code></td><td>Perform structured analysis on data, text, or documents.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="pre-built-templates">Pre-Built Agent Templates</h2>
+      <p>Get started quickly with these ready-to-use agent templates — available in the web app's Agent Builder UI:</p>
+      <table>
+        <thead><tr><th>Template</th><th>Role</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>🔬 Market Researcher</td><td>Senior Market Research Analyst</td><td>Competitive analysis, trend reports</td></tr>
+          <tr><td>✍️ Content Writer</td><td>Senior Content Strategist</td><td>Blog posts, articles, social content</td></tr>
+          <tr><td>📊 Data Analyst</td><td>Business Intelligence Analyst</td><td>Data analysis, reporting, insights</td></tr>
+          <tr><td>💻 Code Reviewer</td><td>Senior Software Engineer</td><td>Code review, refactoring, debugging</td></tr>
+          <tr><td>📧 Outreach Specialist</td><td>Sales Development Representative</td><td>Cold emails, LinkedIn messages</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="running-an-agent">Running an Agent</h2>
+      <p>Run any agent with any prompt. The agent uses its role, goal, and backstory to guide its output:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code>curl -X POST https://api.borjaxai.com/v1/agents/agent_8a3f2d1e/run \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Write a 1000-word SEO-optimized blog post about the benefits of AI for small businesses. Target keyword: AI tools for small business."
+  }'</code></pre>
+      </div>
+      <p>The response is a task ID. Poll <code>GET /v1/tasks/{task_id}</code> for the result:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+        <pre><code>{ "task_id": "task_2b4f8e1a" }</code></pre>
+      </div>
+
+      <h2 id="best-practices">Agent Best Practices</h2>
+      <div class="callout callout-success">
+        <span class="callout-icon">✅</span>
+        <div>
+          <strong>Tips for great agent output:</strong><br/><br/>
+          <strong>Write a rich backstory.</strong> The more specific and detailed the backstory, the better Claude can embody the role. Include years of experience, specific industries, notable achievements, and work style.<br/><br/>
+          <strong>Make the goal action-oriented.</strong> "Write compelling copy" is better than "be a copywriter." Goals should describe the outcome the agent optimizes for.<br/><br/>
+          <strong>Match tools to the role.</strong> A researcher needs <code>web_search</code>. A code reviewer needs <code>code</code>. Don't add tools that aren't relevant — it can distract the agent.<br/><br/>
+          <strong>Provide clear, specific prompts.</strong> Agents work best with detailed task descriptions. Include the desired format, length, tone, and audience in your run prompt.
+        </div>
+      </div>
+    </article>
+
+    <nav class="page-nav">
+      <a href="tasks.html" class="page-nav-prev">← Background Tasks</a>
+      <a href="agency.html" class="page-nav-next">Agency Plan →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

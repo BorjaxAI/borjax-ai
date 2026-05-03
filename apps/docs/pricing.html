@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plans &amp; Pricing — BorjaxAI Docs</title>
+  <meta name="description" content="BorjaxAI pricing plans: Free, Starter, Pro, and Agency. Token-based billing with monthly limits." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link active">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="index.html">Getting Started</a>
+      <span>/</span>
+      <span class="current">Plans &amp; Pricing</span>
+    </div>
+
+    <article class="article">
+      <h1>Plans &amp; Pricing</h1>
+      <p class="lead">BorjaxAI uses a token-based model. Every plan includes a monthly token allowance consumed by chat, tasks, and agent runs.</p>
+
+      <h2 id="plan-comparison">Plan Comparison</h2>
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr>
+              <th style="border-bottom:2px solid var(--border);background:var(--bg-card)"></th>
+              <th class="th-free" style="background:var(--bg-card);border-bottom:2px solid var(--border)">
+                <span class="badge badge-gray" style="margin-bottom:.4rem">Free</span><br/>
+                <span class="price">$0</span>
+                <span class="price-sub">forever</span>
+              </th>
+              <th class="th-starter" style="background:var(--bg-card);border-bottom:2px solid var(--border)">
+                <span class="badge badge-blue" style="margin-bottom:.4rem">Starter</span><br/>
+                <span class="price">$9</span>
+                <span class="price-sub">per month</span>
+              </th>
+              <th class="popular-th" style="border-bottom:2px solid var(--purple);background:var(--purple-10)">
+                <div class="popular-badge">Most Popular</div>
+                <span class="badge badge-purple" style="margin-bottom:.4rem;margin-top:.8rem">Pro</span><br/>
+                <span class="price" style="color:var(--purple)">$29</span>
+                <span class="price-sub">per month</span>
+              </th>
+              <th class="th-agency" style="background:var(--bg-card);border-bottom:2px solid var(--border)">
+                <span class="badge badge-orange" style="margin-bottom:.4rem">Agency</span><br/>
+                <span class="price" style="color:var(--orange)">$99</span>
+                <span class="price-sub">per month</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Monthly Tokens</strong></td>
+              <td>10,000</td>
+              <td>100,000</td>
+              <td>500,000</td>
+              <td>2,000,000</td>
+            </tr>
+            <tr>
+              <td><strong>Chat Conversations</strong></td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td><strong>Background Tasks</strong></td>
+              <td>5 / month</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td><strong>Custom Agents</strong></td>
+              <td>1</td>
+              <td>10</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td><strong>Conversation History</strong></td>
+              <td>30 days</td>
+              <td>90 days</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td><strong>API Access</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>White-Label</strong></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>Team Seats</strong></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td>Up to 10</td>
+            </tr>
+            <tr>
+              <td><strong>Priority Support</strong></td>
+              <td><span class="cross">—</span></td>
+              <td>Email</td>
+              <td>Priority Email</td>
+              <td>Dedicated</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="text-align:center;margin:1.5rem 0">
+        <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="hero-link hero-link-primary" style="display:inline-flex">Upgrade Your Plan →</a>
+      </div>
+
+      <h2 id="what-is-a-token">What Counts as a Token?</h2>
+      <p>BorjaxAI uses Claude's native token counting. Roughly speaking, <strong>1 token ≈ 4 characters of English text</strong>. Tokens are consumed on both the input (what you send) and the output (what Claude returns).</p>
+      <ul>
+        <li>A short chat message ("Summarize this article") uses ~8 input tokens</li>
+        <li>A 500-word article Claude writes uses ~700 output tokens</li>
+        <li>A research task (input + multi-agent reasoning + output) uses 2,000–6,000 tokens</li>
+        <li>Code files and structured data are tokenized the same as text</li>
+      </ul>
+
+      <h2 id="usage-examples">Token Usage Examples</h2>
+      <table>
+        <thead><tr><th>Activity</th><th>Typical Usage</th><th>Free plan duration</th></tr></thead>
+        <tbody>
+          <tr><td>Chat message (short Q&amp;A)</td><td>50–200 tokens</td><td>~50–200 messages</td></tr>
+          <tr><td>Chat message (long analysis)</td><td>500–1,500 tokens</td><td>~7–20 messages</td></tr>
+          <tr><td>Research task</td><td>2,000–6,000 tokens</td><td>~2–5 tasks</td></tr>
+          <tr><td>Writing task (1,000-word article)</td><td>1,500–3,000 tokens</td><td>~3–7 tasks</td></tr>
+          <tr><td>Analysis task</td><td>1,000–3,000 tokens</td><td>~4–10 tasks</td></tr>
+          <tr><td>Custom agent run</td><td>1,500–5,000 tokens</td><td>~2–7 runs</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="faq">Frequently Asked Questions</h2>
+      <h3 id="can-i-upgrade">Can I upgrade or downgrade at any time?</h3>
+      <p>Yes. Upgrades take effect immediately and you're billed a prorated amount for the remainder of the billing cycle. Downgrades take effect at the start of your next billing cycle.</p>
+
+      <h3 id="token-limit">What happens when I hit my token limit?</h3>
+      <p>The API will return a <code>402 Payment Required</code> error with code <code>TOKEN_LIMIT_REACHED</code>. Chat, tasks, and agent runs will all fail until you upgrade or your monthly limit resets. You can check your current usage at any time via <code>GET /v1/auth/me</code>.</p>
+
+      <h3 id="rollover">Do unused tokens roll over?</h3>
+      <p>No. Token allowances reset on the first day of each billing cycle. Unused tokens do not carry over to the next month.</p>
+
+      <h3 id="guest-tokens">What about guest tokens?</h3>
+      <p>Guest sessions (no account) receive 5,000 one-time tokens. These are not monthly — they're a one-time allowance per browser session. Create a free account to get 10,000 monthly tokens.</p>
+
+      <h3 id="overages">Can I purchase additional tokens?</h3>
+      <p>Additional token top-ups are not currently available. To get more tokens, upgrade to the next plan. If you need a custom volume arrangement (enterprise usage), <a href="agency.html">contact us about the Agency plan</a>.</p>
+    </article>
+
+    <nav class="page-nav">
+      <a href="quickstart.html" class="page-nav-prev">← Quick Start</a>
+      <a href="chat.html" class="page-nav-next">AI Chat →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>

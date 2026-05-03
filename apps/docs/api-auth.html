@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: Authentication — BorjaxAI Docs</title>
+  <meta name="description" content="BorjaxAI API authentication: JWT bearer tokens, register, login, guest sessions, and error codes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="docs.css" />
+</head>
+<body>
+
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-logo">
+      <div class="topnav-logo-icon">⚡</div>
+      <span>BorjaxAI</span>
+    </a>
+    <span class="topnav-sep">/</span>
+    <span class="topnav-subtitle">Docs</span>
+    <nav class="topnav-links">
+      <a href="https://github.com/borjaxai" target="_blank" rel="noopener" class="gh-link">GitHub</a>
+      <a href="https://d18813a3in0ap7.cloudfront.net" target="_blank" class="topnav-cta">Try BorjaxAI →</a>
+    </nav>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="8.5" cy="8.5" r="5.5"/><path d="M17 17l-4-4"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search docs…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘K</kbd>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Getting Started</div>
+      <a href="index.html" class="nav-link">Introduction</a>
+      <a href="quickstart.html" class="nav-link">Quick Start</a>
+      <a href="pricing.html" class="nav-link">Plans &amp; Pricing</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Features</div>
+      <a href="chat.html" class="nav-link">AI Chat</a>
+      <a href="tasks.html" class="nav-link">Background Tasks</a>
+      <a href="agents.html" class="nav-link">Agent Builder</a>
+      <a href="agency.html" class="nav-link">Agency Plan</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">API Reference</div>
+      <a href="api-auth.html" class="nav-link active">Authentication</a>
+      <a href="api-chat.html" class="nav-link">Chat</a>
+      <a href="api-tasks.html" class="nav-link">Tasks</a>
+      <a href="api-agents.html" class="nav-link">Agents</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">More</div>
+      <a href="changelog.html" class="nav-link">Changelog <span class="nav-link-badge">New</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="content-wrapper">
+  <main class="content">
+    <div class="breadcrumb">
+      <a href="index.html">Docs</a>
+      <span>/</span>
+      <a href="api-auth.html">API Reference</a>
+      <span>/</span>
+      <span class="current">Authentication</span>
+    </div>
+
+    <article class="article">
+      <h1>API: Authentication</h1>
+      <p class="lead">All API endpoints (except <code>/auth/register</code>, <code>/auth/login</code>, and <code>/auth/guest</code>) require a JWT bearer token.</p>
+
+      <h2 id="base-url">Base URL</h2>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+        <pre><code>https://api.borjaxai.com/v1</code></pre>
+      </div>
+
+      <h2 id="auth-method">Authentication Method</h2>
+      <p>Include the JWT token in every authenticated request as a Bearer token in the <code>Authorization</code> header:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">text</span><button class="copy-btn">Copy</button></div>
+        <pre><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+      </div>
+
+      <h2 id="register">Register</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/auth/register</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Create a new user account. Returns a JWT token on success.</p>
+          <h3>Request Body</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "email": "you@example.com",
+  "password": "your_secure_password",
+  "full_name": "Jane Doe"
+}</code></pre>
+          </div>
+          <h3>Response 201 Created</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "you@example.com",
+    "full_name": "Jane Doe",
+    "plan": "free",
+    "tokens_used": 0,
+    "tokens_limit": 10000,
+    "created_at": "2026-05-03T12:00:00Z"
+  }
+}</code></pre>
+          </div>
+          <h4>cURL</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl -X POST https://api.borjaxai.com/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"secret","full_name":"Jane Doe"}'</code></pre>
+          </div>
+          <h4>JavaScript</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">javascript</span><button class="copy-btn">Copy</button></div>
+            <pre><code>const res = await fetch('https://api.borjaxai.com/v1/auth/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'you@example.com',
+    password: 'secret',
+    full_name: 'Jane Doe',
+  }),
+});
+const { access_token, user } = await res.json();</code></pre>
+          </div>
+          <h4>Python</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">python</span><button class="copy-btn">Copy</button></div>
+            <pre><code>import requests
+
+resp = requests.post('https://api.borjaxai.com/v1/auth/register', json={
+    'email': 'you@example.com',
+    'password': 'secret',
+    'full_name': 'Jane Doe',
+})
+data = resp.json()
+access_token = data['access_token']</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="login">Login</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/auth/login</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Authenticate with email and password. Returns a fresh JWT token.</p>
+          <h3>Request Body</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "email": "you@example.com",
+  "password": "your_secure_password"
+}</code></pre>
+          </div>
+          <h3>Response 200</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "user": { "id": "...", "email": "...", "plan": "free", "tokens_used": 142, "tokens_limit": 10000 }
+}</code></pre>
+          </div>
+          <h4>cURL</h4>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl -X POST https://api.borjaxai.com/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","password":"secret"}'</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="guest">Guest Session</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <span class="endpoint-path">/v1/auth/guest</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Creates a temporary guest session with 5,000 free tokens. No registration required. Guest sessions expire after 24 hours.</p>
+          <h3>Request Body</h3>
+          <p>No request body required.</p>
+          <h3>Response 201</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "user": {
+    "id": "guest_8f4c2e1a",
+    "email": null,
+    "full_name": "Guest",
+    "plan": "guest",
+    "tokens_used": 0,
+    "tokens_limit": 5000,
+    "expires_at": "2026-05-04T12:00:00Z"
+  }
+}</code></pre>
+          </div>
+          <div class="callout callout-warning">
+            <span class="callout-icon">⚠️</span>
+            <div><strong>Guest tokens are one-time.</strong> You cannot create multiple guest sessions from the same IP within 24 hours. Conversations from guest sessions are not saved after expiry.</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="me">Get Current User</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <span class="endpoint-path">/v1/auth/me</span>
+          <span class="badge badge-blue">Auth Required</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Returns the current authenticated user, including token usage. Use this to check if a user is approaching their limit.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code>curl https://api.borjaxai.com/v1/auth/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"</code></pre>
+          </div>
+          <h3>Response 200</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">json</span><button class="copy-btn">Copy</button></div>
+            <pre><code>{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "you@example.com",
+  "full_name": "Jane Doe",
+  "plan": "free",
+  "tokens_used": 4231,
+  "tokens_limit": 10000,
+  "tokens_remaining": 5769,
+  "billing_cycle_end": "2026-06-01T00:00:00Z"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="errors">Error Codes</h2>
+      <table>
+        <thead><tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>400</code></td><td><code>VALIDATION_ERROR</code></td><td>Request body is missing required fields or has invalid values.</td></tr>
+          <tr><td><code>401</code></td><td><code>UNAUTHORIZED</code></td><td>Missing or invalid JWT token. Include a valid <code>Authorization: Bearer</code> header.</td></tr>
+          <tr><td><code>401</code></td><td><code>TOKEN_EXPIRED</code></td><td>The JWT has expired. Re-authenticate via <code>/auth/login</code> to get a new token.</td></tr>
+          <tr><td><code>402</code></td><td><code>TOKEN_LIMIT_REACHED</code></td><td>Monthly token limit exceeded. Upgrade your plan to continue.</td></tr>
+          <tr><td><code>404</code></td><td><code>USER_NOT_FOUND</code></td><td>Login failed — no account with that email.</td></tr>
+          <tr><td><code>422</code></td><td><code>INVALID_CREDENTIALS</code></td><td>Login failed — email/password mismatch.</td></tr>
+          <tr><td><code>429</code></td><td><code>RATE_LIMITED</code></td><td>Too many requests. Back off and retry after the <code>Retry-After</code> header value.</td></tr>
+        </tbody>
+      </table>
+    </article>
+
+    <nav class="page-nav">
+      <a href="agency.html" class="page-nav-prev">← Agency Plan</a>
+      <a href="api-chat.html" class="page-nav-next">API: Chat →</a>
+    </nav>
+  </main>
+</div>
+
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">On this page</div>
+  <nav class="toc-nav" id="tocNav"></nav>
+</aside>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 BorjaxAI. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms</a><a href="#">Privacy</a><a href="changelog.html">Changelog</a>
+    </div>
+  </div>
+</footer>
+
+<script src="docs.js"></script>
+</body>
+</html>
