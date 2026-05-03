@@ -2,6 +2,8 @@ import { initAuth, isLoggedIn, isGuest, getUser, logout, ensureSession } from '.
 import { initChat } from './pages/chat.js';
 import { initTasks } from './pages/tasks.js';
 import { initAgents } from './pages/agents.js';
+import { initModels } from './pages/models.js';
+import { initConnectors } from './pages/connectors.js';
 import { initBilling } from './pages/billing.js';
 import { initSettings } from './pages/settings.js';
 import { initAuthPage } from './pages/auth.js';
@@ -9,11 +11,13 @@ import { updateUsageDisplay } from './utils/tokens.js';
 import { showSignUpModal } from './components/modals.js';
 
 const PAGES = {
-  chat:     { init: initChat,     title: 'Chat' },
-  tasks:    { init: initTasks,    title: 'Tasks' },
-  agents:   { init: initAgents,   title: 'Agent Builder' },
-  billing:  { init: initBilling,  title: 'Billing' },
-  settings: { init: initSettings, title: 'Settings' },
+  chat:       { init: initChat,       title: 'Chat' },
+  tasks:      { init: initTasks,      title: 'Tasks' },
+  agents:     { init: initAgents,     title: 'Agent Builder' },
+  models:     { init: initModels,     title: 'Models' },
+  connectors: { init: initConnectors, title: 'Connectors' },
+  billing:    { init: initBilling,    title: 'Billing' },
+  settings:   { init: initSettings,   title: 'Settings' },
 };
 
 async function route() {
