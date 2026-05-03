@@ -4,6 +4,19 @@ import { showToast } from '../utils/toast.js';
 import { isGuest, getUser } from '../utils/auth.js';
 import { formatTokens } from '../utils/tokens.js';
 import { showTokenExhaustedModal } from '../components/modals.js';
+import { notifyTaskComplete } from '../components/notifications.js';
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
 
 export async function initChat(container) {
   container.innerHTML = `
@@ -39,6 +52,7 @@ export async function initChat(container) {
 
   let currentConvId = null;
   let isStreaming   = false;
+  let lastUserText  = '';
 
   // ── Guest token bar ─────────────────────────────────────────
   if (isGuest()) {
@@ -88,19 +102,63 @@ export async function initChat(container) {
 
   function renderMessages(msgs) {
     const area = document.getElementById('messages-area');
-    area.innerHTML = msgs.map(m => buildMessage(m.role, m.content)).join('');
+    area.innerHTML = msgs.map((m, i) => buildMessage(m.role, m.content, m.created_at, i === msgs.length - 1)).join('');
     area.scrollTop = area.scrollHeight;
+    bindMessageActions();
   }
 
-  function buildMessage(role, content) {
+  function buildMessage(role, content, timestamp, isLast) {
     const isUser = role === 'user';
     const html = isUser
       ? content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
       : (typeof marked !== 'undefined' ? marked.parse(content) : content);
+    const timeStr = timestamp ? timeAgo(timestamp) : 'just now';
+    const fullDate = timestamp ? new Date(timestamp).toLocaleString() : '';
+
     return `<div class="message ${isUser ? 'user' : 'assistant'}">
       ${!isUser ? '<div class="msg-avatar">🤖</div>' : ''}
-      <div class="msg-bubble"><div class="msg-content">${html}</div></div>
+      <div class="msg-bubble">
+        <div class="msg-content">${html}</div>
+        <div class="msg-meta">
+          <span class="msg-time" title="${fullDate}">${timeStr}</span>
+          ${!isUser ? `
+            <button class="msg-action-btn copy-msg-btn" title="Copy">📋</button>
+            ${isLast ? '<button class="msg-action-btn regen-btn" title="Regenerate">🔄</button>' : ''}
+          ` : ''}
+        </div>
+      </div>
     </div>`;
+  }
+
+  function bindMessageActions() {
+    // Copy buttons
+    document.querySelectorAll('.copy-msg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const content = btn.closest('.msg-bubble')?.querySelector('.msg-content');
+        if (content) {
+          navigator.clipboard.writeText(content.innerText).then(() => {
+            btn.textContent = '✅';
+            setTimeout(() => { btn.textContent = '📋'; }, 1500);
+          });
+        }
+      });
+    });
+
+    // Regenerate button
+    document.querySelector('.regen-btn')?.addEventListener('click', () => {
+      if (lastUserText) regenerateResponse();
+    });
+  }
+
+  // ── Regenerate last response ────────────────────────────────
+  async function regenerateResponse() {
+    if (isStreaming || !lastUserText) return;
+    // Remove last AI message from DOM
+    const area = document.getElementById('messages-area');
+    const lastAi = area.querySelector('.message.assistant:last-child');
+    if (lastAi) lastAi.remove();
+    // Re-send
+    await doSend(lastUserText, true);
   }
 
   // ── Send message ─────────────────────────────────────────────
@@ -110,25 +168,37 @@ export async function initChat(container) {
     const text  = input.value.trim();
     if (!text) return;
 
-    isStreaming = true;
     input.value = ''; input.style.height = 'auto';
+    lastUserText = text;
+    await doSend(text, false);
+  }
+
+  async function doSend(text, isRegen) {
+    isStreaming = true;
     const sendBtn = document.getElementById('send-btn');
     sendBtn.disabled = true;
 
     document.getElementById('chat-empty')?.remove();
     const area = document.getElementById('messages-area');
-    area.insertAdjacentHTML('beforeend', buildMessage('user', text));
 
+    if (!isRegen) {
+      area.insertAdjacentHTML('beforeend', buildMessage('user', text, null, false));
+    }
+
+    // Add typing indicator
     const aiEl = document.createElement('div');
     aiEl.className = 'message assistant';
     aiEl.innerHTML = `<div class="msg-avatar">🤖</div>
       <div class="msg-bubble"><div class="msg-content">
         <span class="typing-dots"><span></span><span></span><span></span></span>
-      </div></div>`;
+      </div>
+      <div class="msg-meta"><span class="msg-time">typing...</span></div>
+      </div>`;
     area.appendChild(aiEl);
     area.scrollTop = area.scrollHeight;
 
     const contentEl = aiEl.querySelector('.msg-content');
+    const metaEl = aiEl.querySelector('.msg-meta');
     let fullText = '';
 
     try {
@@ -145,11 +215,20 @@ export async function initChat(container) {
         },
         (convId) => { currentConvId = convId; refreshConvList(); }
       );
+
+      // Update meta after streaming done
+      if (metaEl) {
+        metaEl.innerHTML = `
+          <span class="msg-time" title="${new Date().toLocaleString()}">just now</span>
+          <button class="msg-action-btn copy-msg-btn" title="Copy">📋</button>
+          <button class="msg-action-btn regen-btn" title="Regenerate">🔄</button>
+        `;
+      }
+      bindMessageActions();
     } catch (err) {
       if (err.status === 402 || err.code === 'TOKEN_LIMIT_REACHED') {
-        // Remove the partial AI bubble and user message
         aiEl.remove();
-        area.querySelector('.message.user:last-of-type')?.remove();
+        if (!isRegen) area.querySelector('.message.user:last-of-type')?.remove();
         showTokenExhaustedModal();
       } else {
         contentEl.innerHTML = `<span style="color:var(--red)">Error: ${err.message}</span>`;
@@ -186,6 +265,7 @@ export async function initChat(container) {
   });
   document.getElementById('new-chat-btn')?.addEventListener('click', () => {
     currentConvId = null;
+    lastUserText = '';
     document.querySelectorAll('.conv-item').forEach(b => b.classList.remove('active'));
     document.getElementById('messages-area').innerHTML = `
       <div class="empty-state" id="chat-empty">

@@ -1196,3 +1196,95 @@ select option { background: var(--bg-card); }
 /* Animations */
 @keyframes fadeIn  { from { opacity: 0 }               to { opacity: 1 } }
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+/* ── Notification Bell ─────────────────────────────────────── */
+.notif-bell {
+  background: none; border: none; font-size: 1.25rem; cursor: pointer;
+  position: relative; padding: 4px 8px; border-radius: 8px;
+  transition: background 0.15s;
+}
+.notif-bell:hover { background: var(--bg-hover); }
+.notif-dot {
+  position: absolute; top: 2px; right: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  font-size: 0.6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg-panel);
+}
+
+/* ── Notification Dropdown ─────────────────────────────────── */
+.notif-dropdown {
+  position: absolute; top: 100%; right: 0; z-index: 999;
+  width: 340px; max-height: 420px; overflow-y: auto;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  animation: slideUp 0.15s ease;
+}
+.notif-dropdown-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+}
+.notif-dropdown-title { font-weight: 600; font-size: 0.9rem; color: var(--fg); }
+.notif-dropdown-actions { display: flex; gap: 0.5rem; }
+.notif-action-btn {
+  background: none; border: none; color: var(--blue); cursor: pointer;
+  font-size: 0.75rem; padding: 2px 6px; border-radius: 6px;
+}
+.notif-action-btn:hover { background: var(--bg-hover); }
+.notif-dropdown-list { padding: 0.25rem 0; }
+.notif-item {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  padding: 0.6rem 1rem; cursor: default;
+  transition: background 0.1s;
+}
+.notif-item:hover { background: var(--bg-hover); }
+.notif-item.unread { border-left: 3px solid var(--blue); }
+.notif-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+.notif-item-body { flex: 1; min-width: 0; }
+.notif-item-title { font-size: 0.82rem; font-weight: 600; color: var(--fg); }
+.notif-item-msg { font-size: 0.75rem; color: var(--fg-dim); margin-top: 2px; }
+.notif-item-time { font-size: 0.68rem; color: var(--gray); flex-shrink: 0; white-space: nowrap; margin-top: 2px; }
+.notif-empty {
+  padding: 2rem 1rem; text-align: center;
+  color: var(--fg-dim); font-size: 0.85rem;
+}
+
+/* ── Shortcuts Hint ────────────────────────────────────────── */
+.shortcuts-hint {
+  display: flex; gap: 0.75rem; flex-wrap: wrap;
+  padding: 0.4rem 0.6rem; margin-bottom: 0.5rem;
+  font-size: 0.68rem; color: var(--gray);
+}
+.shortcuts-hint span {
+  background: var(--bg-float); padding: 2px 8px;
+  border-radius: 6px; white-space: nowrap;
+}
+
+/* ── Message Meta (timestamps, actions) ────────────────────── */
+.msg-meta {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-top: 0.35rem; opacity: 0;
+  transition: opacity 0.15s;
+}
+.msg-bubble:hover .msg-meta { opacity: 1; }
+.msg-time { font-size: 0.68rem; color: var(--gray); }
+.msg-action-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.78rem; padding: 2px 4px; border-radius: 4px;
+  opacity: 0.7; transition: opacity 0.1s, background 0.1s;
+}
+.msg-action-btn:hover { opacity: 1; background: var(--bg-hover); }
+
+/* ── Billing Animated Fill ─────────────────────────────────── */
+.billing-fill-animate {
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Header Right (relative for dropdown) ──────────────────── */
+.header-right { position: relative; }
+
+@media (max-width: 768px) {
+  .notif-dropdown { width: calc(100vw - 2rem); right: -1rem; }
+  .shortcuts-hint { display: none; }
+}
