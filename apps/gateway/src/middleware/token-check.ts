@@ -1,6 +1,7 @@
 import type { Context, Next } from "hono";
 
 const TOKEN_LIMITS: Record<string, number> = {
+  guest: 5_000,
   free: 10_000,
   starter: 100_000,
   pro: 500_000,
@@ -27,19 +28,24 @@ export async function tokenCheckMiddleware(c: Context, next: Next): Promise<Resp
       return next();
     }
 
-    const data = (await res.json()) as { tokens_used: number; plan: string };
-    const limit = TOKEN_LIMITS[data.plan] ?? TOKEN_LIMITS["free"];
+    const data = (await res.json()) as { tokens_used: number; tokens_limit?: number; plan: string; is_guest?: boolean };
+    const limit = data.tokens_limit ?? TOKEN_LIMITS[data.plan] ?? TOKEN_LIMITS["free"];
 
     if (data.tokens_used >= limit) {
       return c.json(
         {
-          error: "Token Limit Exceeded",
-          message: `You have used all ${limit.toLocaleString()} tokens on your ${data.plan} plan. Please upgrade to continue.`,
-          tokens_used: data.tokens_used,
-          tokens_limit: limit,
-          plan: data.plan,
+          detail: {
+            code: "TOKEN_LIMIT_REACHED",
+            is_guest: data.is_guest ?? false,
+            plan: data.plan,
+            tokens_used: data.tokens_used,
+            tokens_limit: limit,
+            message: data.is_guest
+              ? `You've used all ${limit.toLocaleString()} free guest tokens. Create a free account to get 10,000 tokens.`
+              : `You have used all ${limit.toLocaleString()} tokens on your ${data.plan} plan. Please upgrade to continue.`,
+          },
         },
-        429
+        402
       );
     }
   } catch {

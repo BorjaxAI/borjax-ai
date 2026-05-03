@@ -48,4 +48,16 @@ auth.get("/me", async (c) => {
   });
 });
 
+auth.post("/guest", async (c) => {
+  const res = await fetch(`${AI_URL()}/auth/guest`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  const data = await res.text();
+  return new Response(data, {
+    status: res.status,
+    headers: { "Content-Type": "application/json" },
+  });
+});
+
 export default auth;

@@ -24,6 +24,7 @@ class User(Base):
     tokens_limit = Column(Integer, default=10000, nullable=False)
     stripe_customer_id = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_guest = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

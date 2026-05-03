@@ -11,10 +11,16 @@ export async function streamChat(content, conversationId, onDelta, onDone) {
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    let msg = `HTTP ${res.status}`;
-    try { msg = JSON.parse(text).detail || JSON.parse(text).error || msg; } catch {}
-    throw new Error(msg);
+    const error = new Error(`HTTP ${res.status}`);
+    error.status = res.status;
+    try {
+      const body = await res.json();
+      error.detail = body.detail;
+      // Unwrap nested detail object message
+      if (body.detail?.code) error.code = body.detail.code;
+      if (body.detail?.message) error.message = body.detail.message;
+    } catch {}
+    throw error;
   }
 
   const reader  = res.body.getReader();

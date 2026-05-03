@@ -33,7 +33,8 @@ def get_bedrock_client():
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 class ChatRequest(BaseModel):
-    message: str
+    message: Optional[str] = None
+    content: Optional[str] = None   # alias — frontend sends 'content'
     conversation_id: Optional[str] = None
 
 
@@ -145,6 +146,24 @@ async def send_message(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_auth),
 ):
+    # Resolve message text from either field name
+    user_text = payload.message or payload.content or ""
+    if not user_text.strip():
+        raise HTTPException(status_code=422, detail="Message content is required")
+
+    # ── Token limit guard — 402 for exhausted guests / any plan ──────────────
+    is_guest = getattr(current_user, 'is_guest', False)
+    if current_user.tokens_used >= current_user.tokens_limit:
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "code": "TOKEN_LIMIT_REACHED",
+                "is_guest": is_guest,
+                "plan": current_user.plan,
+                "tokens_used": current_user.tokens_used,
+                "tokens_limit": current_user.tokens_limit,
+            },
+        )
     # Get or create conversation
     if payload.conversation_id:
         conv = db.query(Conversation).filter(
@@ -163,7 +182,7 @@ async def send_message(
     user_msg = Message(
         conversation_id=conv.id,
         role="user",
-        content=payload.message,
+        content=user_text,
         tokens=0,
     )
     db.add(user_msg)
@@ -179,7 +198,7 @@ async def send_message(
     bedrock_messages = [
         {"role": m.role, "content": m.content} for m in history
     ]
-    bedrock_messages.append({"role": "user", "content": payload.message})
+    bedrock_messages.append({"role": "user", "content": user_text})
 
     return StreamingResponse(
         stream_bedrock(bedrock_messages, db, current_user, conv.id, user_msg.id),

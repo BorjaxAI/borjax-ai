@@ -37,6 +37,7 @@ def token_usage(
         "tokens_used": user.tokens_used,
         "tokens_limit": user.tokens_limit,
         "plan": user.plan,
+        "is_guest": getattr(user, 'is_guest', False),
     }
 
 

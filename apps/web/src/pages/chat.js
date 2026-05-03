@@ -1,6 +1,9 @@
 import { apiFetch } from '../api/client.js';
 import { streamChat } from '../api/chat.js';
 import { showToast } from '../utils/toast.js';
+import { isGuest, getUser } from '../utils/auth.js';
+import { formatTokens } from '../utils/tokens.js';
+import { showTokenExhaustedModal } from '../components/modals.js';
 
 export async function initChat(container) {
   container.innerHTML = `
@@ -36,6 +39,22 @@ export async function initChat(container) {
 
   let currentConvId = null;
   let isStreaming   = false;
+
+  // ── Guest token bar ─────────────────────────────────────────
+  if (isGuest()) {
+    const user = getUser();
+    const left = Math.max(0, (user?.tokens_limit || 5000) - (user?.tokens_used || 0));
+    const bar = document.createElement('div');
+    bar.className = 'guest-token-bar';
+    bar.id = 'guest-token-bar';
+    bar.innerHTML = `
+      <span class="tokens-label">🎁 Free trial</span>
+      <span class="tokens-left" id="guest-tokens-left">${formatTokens(left)} tokens left</span>
+      <span class="upgrade-link" id="upgrade-link">Create free account →</span>
+    `;
+    document.getElementById('messages-area').before(bar);
+    document.getElementById('upgrade-link')?.addEventListener('click', showTokenExhaustedModal);
+  }
 
   // ── Load conversations ──────────────────────────────────────
   try {
@@ -127,7 +146,14 @@ export async function initChat(container) {
         (convId) => { currentConvId = convId; refreshConvList(); }
       );
     } catch (err) {
-      contentEl.innerHTML = `<span style="color:var(--red)">Error: ${err.message}</span>`;
+      if (err.status === 402 || err.code === 'TOKEN_LIMIT_REACHED') {
+        // Remove the partial AI bubble and user message
+        aiEl.remove();
+        area.querySelector('.message.user:last-of-type')?.remove();
+        showTokenExhaustedModal();
+      } else {
+        contentEl.innerHTML = `<span style="color:var(--red)">Error: ${err.message}</span>`;
+      }
     } finally {
       isStreaming = false;
       sendBtn.disabled = false;

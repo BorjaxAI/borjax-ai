@@ -1,4 +1,5 @@
 import os
+import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -45,6 +46,7 @@ class UserOut(BaseModel):
     tokens_used: int
     tokens_limit: int
     is_active: bool
+    is_guest: bool = False
     created_at: datetime
 
     class Config:
@@ -150,3 +152,40 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserOut)
 def me(current_user: User = Depends(require_auth)):
     return UserOut.model_validate(current_user)
+
+
+@router.post("/guest")
+def create_guest_session(db: Session = Depends(get_db)):
+    """Create anonymous guest session with 5000 token allowance."""
+    guest_id = f"guest_{secrets.token_urlsafe(16)}"
+    guest = User(
+        email=f"{guest_id}@guest.borjaxai.com",
+        full_name="Guest",
+        hashed_password="",
+        plan="guest",
+        tokens_used=0,
+        tokens_limit=5000,
+        is_guest=True,
+        is_active=True,
+    )
+    db.add(guest)
+    db.commit()
+    db.refresh(guest)
+
+    token = create_access_token({"sub": guest.id, "email": guest.email, "plan": "guest", "is_guest": True})
+    return {
+        "token": token,
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(guest.id),
+            "name": "Guest",
+            "full_name": "Guest",
+            "email": guest.email,
+            "plan": "guest",
+            "tokens_used": 0,
+            "tokens_limit": 5000,
+            "is_guest": True,
+            "is_active": True,
+        },
+    }
