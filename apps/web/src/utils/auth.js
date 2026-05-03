@@ -1,25 +1,14 @@
-/** Token storage helpers */
-const TOKEN_KEY = 'borjaxai_token';
+const API = import.meta.env.VITE_API_URL || 'http://35.153.204.139:3000';
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
+export const getToken  = ()  => localStorage.getItem('borjax_token');
+export const setToken  = (t) => localStorage.setItem('borjax_token', t);
+export const removeToken = () => localStorage.removeItem('borjax_token');
+export const isLoggedIn  = () => !!getToken();
+export const getUser = () => { try { return JSON.parse(localStorage.getItem('borjax_user')); } catch { return null; } };
+export const setUser = (u) => localStorage.setItem('borjax_user', JSON.stringify(u));
+export const logout  = () => { removeToken(); localStorage.removeItem('borjax_user'); };
 
-export function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
+// No-op — kept for compat with import { initAuth }
+export function initAuth() {}
 
-export function removeToken() {
-  localStorage.removeItem(TOKEN_KEY);
-}
-
-export function isAuthenticated() {
-  const token = getToken();
-  if (!token) return false;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp * 1000 > Date.now();
-  } catch {
-    return false;
-  }
-}
+export { API };

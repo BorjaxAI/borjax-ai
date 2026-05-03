@@ -1,68 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BorjaxAI — Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BorjaxAI</title>
+  <link rel="stylesheet" href="/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body>
+<body class="theme-dark">
 
-<!-- Auth overlay (shown when not logged in) -->
-<div id="auth-overlay" class="auth-overlay hidden">
-  <div id="auth-container"></div>
-</div>
-
-<!-- App shell -->
-<div id="app" class="app-shell hidden">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">⚡</div>
-        <span class="logo-text">BorjaxAI</span>
-      </div>
+  <!-- Auth screens (shown when logged out) -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <a href="/" class="logo">Borjax<span>AI</span></a>
+      <div id="auth-form-container"></div>
     </div>
+  </div>
 
-    <nav class="sidebar-nav">
-      <a href="#" class="nav-item active" data-page="chat">
-        <span class="nav-icon">💬</span>
-        <span>Chat</span>
-      </a>
-      <a href="#" class="nav-item" data-page="tasks">
-        <span class="nav-icon">⚡</span>
-        <span>Tasks</span>
-      </a>
-      <a href="#" class="nav-item" data-page="agents">
-        <span class="nav-icon">🤖</span>
-        <span>Agents</span>
-      </a>
-      <a href="#" class="nav-item" data-page="billing">
-        <span class="nav-icon">💳</span>
-        <span>Billing</span>
-      </a>
-    </nav>
+  <!-- App (shown when logged in) -->
+  <div id="app" class="app-layout" style="display:none">
 
-    <div class="sidebar-footer">
-      <div class="user-info" id="user-info">
-        <div class="user-avatar" id="user-avatar">U</div>
-        <div class="user-details">
-          <div class="user-name" id="user-name">Loading...</div>
-          <div class="user-plan" id="user-plan">free</div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <a href="/" class="logo sidebar-logo">Borjax<span>AI</span></a>
+        <nav class="sidebar-nav">
+          <a href="#/chat"    class="nav-item" data-page="chat">    <span class="nav-icon">💬</span><span class="nav-label">Chat</span></a>
+          <a href="#/tasks"   class="nav-item" data-page="tasks">   <span class="nav-icon">⚡</span><span class="nav-label">Tasks</span></a>
+          <a href="#/agents"  class="nav-item" data-page="agents">  <span class="nav-icon">🤖</span><span class="nav-label">Agents</span></a>
+          <a href="#/billing" class="nav-item" data-page="billing"> <span class="nav-icon">💳</span><span class="nav-label">Billing</span></a>
+          <a href="#/settings" class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></a>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="token-usage" id="sidebar-usage">
+          <div class="usage-label"><span>Tokens</span><span id="usage-text">0 / 10k</span></div>
+          <div class="usage-bar"><div class="usage-fill" id="usage-fill" style="width:0%"></div></div>
+        </div>
+        <div class="user-pill" id="user-pill">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-info">
+            <span id="user-name">Loading...</span>
+            <span id="user-plan" class="plan-badge">free</span>
+          </div>
+          <button class="logout-btn" id="logout-btn" title="Sign out">↩</button>
         </div>
       </div>
-      <button class="btn btn-ghost btn-sm" id="logout-btn">Sign Out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-area">
+      <header class="app-header">
+        <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+        <h1 class="page-title" id="page-title">Chat</h1>
+        <div class="header-right">
+          <div class="header-token-badge" id="header-token-badge">
+            <span id="header-usage-text">10k tokens left</span>
+          </div>
+        </div>
+      </header>
+      <main class="page-content" id="page-content"></main>
     </div>
-  </aside>
 
-  <!-- Main content -->
-  <main class="main-content">
-    <div id="page-container"></div>
-  </main>
-</div>
+  </div>
 
-<script type="module" src="/src/app.js"></script>
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module" src="/src/app.js"></script>
 </body>
 </html>

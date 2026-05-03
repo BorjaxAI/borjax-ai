@@ -1,32 +1,26 @@
-import { api } from './client.js';
+import { getToken, API } from '../utils/auth.js';
 
-/**
- * Stream chat via SSE.
- * Calls onToken(text) for each token, onDone({conversation_id, tokens_used}) when complete.
- */
-export async function streamChat({ message, conversationId, onToken, onDone, onError }) {
-  let res;
-  try {
-    res = await api.stream('/chat/send', {
-      message,
-      conversation_id: conversationId || null,
-    });
-  } catch (err) {
-    onError?.(err.message || 'Network error');
-    return;
-  }
+export async function streamChat(content, conversationId, onDelta, onDone) {
+  const res = await fetch(`${API}/v1/chat/send`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify({ content, conversation_id: conversationId || null }),
+  });
 
   if (!res.ok) {
     const text = await res.text();
     let msg = `HTTP ${res.status}`;
     try { msg = JSON.parse(text).detail || JSON.parse(text).error || msg; } catch {}
-    onError?.(msg);
-    return;
+    throw new Error(msg);
   }
 
-  const reader = res.body.getReader();
+  const reader  = res.body.getReader();
   const decoder = new TextDecoder();
-  let buffer = '';
+  let buffer    = '';
+  let convId    = conversationId;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -40,19 +34,15 @@ export async function streamChat({ message, conversationId, onToken, onDone, onE
       if (!line.startsWith('data: ')) continue;
       const raw = line.slice(6).trim();
       if (!raw || raw === '[DONE]') continue;
-
       try {
-        const event = JSON.parse(raw);
-        if (event.type === 'token') {
-          onToken?.(event.content);
-        } else if (event.type === 'done') {
-          onDone?.(event);
-        } else if (event.type === 'error') {
-          onError?.(event.message);
-        }
-      } catch {
-        // ignore malformed events
-      }
+        const data = JSON.parse(raw);
+        if (data.type === 'conversation_id') convId = data.id;
+        if (data.type === 'token')  onDelta(data.content);
+        if (data.type === 'delta')  onDelta(data.text);
+        if (data.type === 'done')   onDone?.(convId);
+      } catch { /* ignore malformed */ }
     }
   }
+
+  return convId;
 }

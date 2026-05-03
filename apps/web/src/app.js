@@ -1,107 +1,62 @@
-import { isAuthenticated, removeToken } from './utils/auth.js';
-import { renderAuth } from './pages/auth.js';
-import { renderChat } from './pages/chat.js';
-import { renderTasks, cleanupTasks } from './pages/tasks.js';
-import { renderAgents } from './pages/agents.js';
-import { renderBilling } from './pages/billing.js';
-import { api } from './api/client.js';
+import { initAuth, isLoggedIn, getUser, logout } from './utils/auth.js';
+import { initChat } from './pages/chat.js';
+import { initTasks } from './pages/tasks.js';
+import { initAgents } from './pages/agents.js';
+import { initBilling } from './pages/billing.js';
+import { initSettings } from './pages/settings.js';
+import { initAuthPage } from './pages/auth.js';
+import { updateUsageDisplay } from './utils/tokens.js';
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-export function showToast(msg, type = 'info') {
-  let container = document.getElementById('toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toast-container';
-    document.body.appendChild(container);
+const PAGES = {
+  chat:     { init: initChat,     title: 'Chat' },
+  tasks:    { init: initTasks,    title: 'Tasks' },
+  agents:   { init: initAgents,   title: 'Agent Builder' },
+  billing:  { init: initBilling,  title: 'Billing' },
+  settings: { init: initSettings, title: 'Settings' },
+};
+
+async function route() {
+  if (!isLoggedIn()) {
+    showAuth();
+    return;
   }
-  const toast = document.createElement('div');
-  toast.className = 'toast ' + type;
-  toast.textContent = msg;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
-}
-
-// ── Router ─────────────────────────────────────────────────────────────────────
-let currentPage = 'chat';
-
-function navigate(page) {
-  if (currentPage === 'tasks') cleanupTasks();
-  currentPage = page;
-
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.dataset.page === page);
+  showApp();
+  const hash = location.hash.replace('#/', '') || 'chat';
+  const page = PAGES[hash] || PAGES.chat;
+  document.getElementById('page-title').textContent = page.title;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === hash);
   });
-
-  const container = document.getElementById('page-container');
+  const container = document.getElementById('page-content');
   container.innerHTML = '';
+  await page.init(container);
+  updateUsageDisplay();
+}
 
-  switch (page) {
-    case 'chat':    renderChat(container);    break;
-    case 'tasks':   renderTasks(container);   break;
-    case 'agents':  renderAgents(container);  break;
-    case 'billing': renderBilling(container); break;
-    default:        renderChat(container);
+function showAuth() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  initAuthPage(document.getElementById('auth-form-container'), () => route());
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const user = getUser();
+  if (user) {
+    document.getElementById('user-name').textContent = user.name || user.full_name || user.email;
+    document.getElementById('user-avatar').textContent = (user.name || user.full_name || user.email || '?')[0].toUpperCase();
+    const plan = user.plan || 'free';
+    document.getElementById('user-plan').textContent = plan;
+    document.getElementById('user-plan').className = `plan-badge badge-${plan}`;
   }
 }
 
-// ── User info ──────────────────────────────────────────────────────────────────
-async function loadUserInfo() {
-  try {
-    const user = await api.get('/auth/me');
-    const nameEl = document.getElementById('user-name');
-    const planEl = document.getElementById('user-plan');
-    const avatarEl = document.getElementById('user-avatar');
-    if (nameEl) nameEl.textContent = user.full_name || user.email;
-    if (planEl) planEl.textContent = user.plan + ' plan';
-    if (avatarEl) avatarEl.textContent = (user.full_name || user.email).charAt(0).toUpperCase();
-  } catch {}
-}
-
-// ── Init ───────────────────────────────────────────────────────────────────────
-function init() {
-  // Add toast container
-  const toastContainer = document.createElement('div');
-  toastContainer.id = 'toast-container';
-  document.body.appendChild(toastContainer);
-
-  const authOverlay = document.getElementById('auth-overlay');
-  const app = document.getElementById('app');
-
-  if (!isAuthenticated()) {
-    authOverlay.classList.remove('hidden');
-    app.classList.add('hidden');
-    renderAuth(document.getElementById('auth-container'), (user) => {
-      authOverlay.classList.add('hidden');
-      app.classList.remove('hidden');
-      const nameEl = document.getElementById('user-name');
-      const planEl = document.getElementById('user-plan');
-      const avatarEl = document.getElementById('user-avatar');
-      if (nameEl) nameEl.textContent = user.full_name || user.email;
-      if (planEl) planEl.textContent = user.plan + ' plan';
-      if (avatarEl) avatarEl.textContent = (user.full_name || user.email).charAt(0).toUpperCase();
-      navigate('chat');
-    });
-  } else {
-    authOverlay.classList.add('hidden');
-    app.classList.remove('hidden');
-    loadUserInfo();
-    navigate('chat');
-  }
-
-  // Nav click handlers
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigate(item.dataset.page);
-    });
-  });
-
-  // Logout
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    if (currentPage === 'tasks') cleanupTasks();
-    removeToken();
-    window.location.reload();
-  });
-}
-
-init();
+document.getElementById('logout-btn')?.addEventListener('click', () => { logout(); route(); });
+document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('collapsed');
+  sidebar.classList.toggle('open');
+});
+window.addEventListener('hashchange', route);
+window.addEventListener('DOMContentLoaded', route);
